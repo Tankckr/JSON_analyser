@@ -18,9 +18,9 @@ C++17STL， 不能使用Boost等任何第三方库。
 将JSON类型序列化为std::ostream  
 基于Google Test开发unittest  
 撰写开发文档，包括：  
-    定义开发阶段和成果(Merge Request)  
-    概要设计  
-    详细设计  
+:定义开发阶段和成果(Merge Request)  
+:概要设计  
+:详细设计  
 
 #### 扩展要求(可选)
 支持类似XML SAX的流式解析接口。  
