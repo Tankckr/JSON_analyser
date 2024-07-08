@@ -14,13 +14,13 @@ VCS：Git
 实现使用递归下降解析器  
 C++17STL， 不能使用Boost等任何第三方库。  
 基于C++基本类型和STL容器， 类型化JSON object,array,int,real和string  
-解析std::istream为上述JSON类型。  
+解析std::istream为上述JSON类型。 
 将JSON类型序列化为std::ostream  
 基于Google Test开发unittest  
 撰写开发文档，包括：  
-:定义开发阶段和成果(Merge Request)  
-:概要设计  
-:详细设计  
+- 定义开发阶段和成果(Merge Request)  
+- 概要设计  
+- 详细设计  
 
 #### 扩展要求(可选)
 支持类似XML SAX的流式解析接口。  
