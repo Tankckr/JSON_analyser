@@ -5,7 +5,8 @@ namespace JSON
 	//全局异常
 	CppJSON_Error* error = new CppJSON_Error;
 
-	/*----------类成员函数模块----------*/
+/*----------类成员函数模块----------*/
+	/*基类禁用以下功能*/
 	CppJSON::~CppJSON() {}
 	CppJSON& CppJSON::operator [] (int pos) const { error->throw_exception(CppJSON_Error::Invalid_Type); return *error; }
 	CppJSON& CppJSON::operator [] (const std::string key_name) const { error->throw_exception(CppJSON_Error::Invalid_Type); return *error; }
@@ -19,8 +20,12 @@ namespace JSON
 	CppJSON& CppJSON_Array::operator [] (int pos) const
 	{
 		CppJSON* location = this->return_child();
+		//遍历查询
 		while (location != nullptr && pos > 0)
-			location = location->return_next(), --pos;
+		{
+			location = location->return_next();
+			--pos;
+		}
 		//越界异常，返回错误类型
 		if (pos != 0 || location == nullptr)
 		{
@@ -33,6 +38,7 @@ namespace JSON
 	CppJSON& CppJSON_Object::operator [] (const std::string key_name) const
 	{
 		CppJSON* location = this->return_child();
+		//遍历查找
 		while (location != nullptr && key_name != location->return_key())
 			location = location->return_next();
 		//找不到关键字，返回错误类型
@@ -47,6 +53,7 @@ namespace JSON
 	//在数组尾部加入新元素
 	void CppJSON_Array::push_back(CppJSON* item)
 	{
+		//进入到子对象层
 		CppJSON* preloc = this->return_child(), * loc = this->return_child();
 		//空数组
 		if (loc == nullptr) { this->set_child(item); return; }
@@ -60,6 +67,7 @@ namespace JSON
 	//在对象尾部加入新元素
 	void CppJSON_Object::push_back(CppJSON* item)
 	{
+		//进入到子对象层
 		CppJSON* preloc = this->return_child(), * loc = this->return_child();
 		//空对象
 		if (loc == nullptr) { this->set_child(item); return; }
@@ -87,15 +95,19 @@ namespace JSON
 		//如果上述过程抛出异常直接退出
 		if (typeid(*error) == typeid(*prev_loc))
 			return;
-		//如果pos-1的位置为队尾则退化成push_back
+		
 		if (prev_loc->return_next() != nullptr)
-		{
+		{//在中间插入
 			CppJSON* next_loc = prev_loc->return_next();
 			prev_loc->set_next(item), item->set_prev(prev_loc);
 			item->set_next(next_loc), next_loc->set_prev(item);
 		}
+		
 		else
-			prev_loc->set_next(item), item->set_prev(prev_loc);
+		{//如果pos-1的位置为队尾则退化成push_back
+			prev_loc->set_next(item);
+			item->set_prev(prev_loc);
+		}
 		return;
 	}
 
@@ -147,11 +159,11 @@ namespace JSON
 		delete detath_item;
 		return;
 	}
-	/*----------类成员函数模块----------*/
+/*----------类成员函数模块----------*/
 
 
 
-	/*----------异常模块----------*/
+/*----------异常模块----------*/
 	//对不同错误类型抛出不同异常
 	void CppJSON_Error::throw_exception(Error_Type type)
 	{
@@ -185,11 +197,11 @@ namespace JSON
 		std::cout << "Parsing failed: " << fail_pos << std::endl;
 		return error;
 	}
-	/*----------异常模块----------*/
+/*----------异常模块----------*/
 
 
 
-	/*---------功能函数模块---------*/
+/*---------功能函数模块---------*/
 	//删除整个json结构
 	void delete_json(CppJSON* detach_json)
 	{
@@ -197,9 +209,11 @@ namespace JSON
 		while (detach_json)
 		{
 			next = detach_json->return_next();
+			//递归删除
 			if (detach_json->return_child() != nullptr)
 				delete_json(detach_json->return_child());
 			delete detach_json;
+			//同级循环
 			detach_json = next;
 		}
 		return;
@@ -236,8 +250,13 @@ namespace JSON
 		return res;
 	}
 	//跳过空白格
-	std::stringstream& skip_whitespace(std::stringstream& message) { while (message.peek() > 0 && message.peek() <= 32) message.ignore(); return message; }
-	//获取一个元素的key值
+	std::stringstream& skip_whitespace(std::stringstream& message)
+	{
+		while (message.peek() > 0 && message.peek() <= 32)
+			message.ignore();
+		return message;
+	}
+	//获取一个元素的key值	kn = key_name
 	bool get_keyname(std::string& kn, std::stringstream& message)
 	{
 		if (message.peek() != '\"')
@@ -250,11 +269,11 @@ namespace JSON
 		else
 			return false;
 	}
-	/*---------功能函数模块---------*/
+/*---------功能函数模块---------*/
 
 
 
-	/*----------解析模块----------*/
+/*----------解析模块----------*/
 	//前置声明
 	CppJSON* parse_object(std::stringstream& message);
 	//以string参数进行解析
@@ -281,6 +300,27 @@ namespace JSON
 			error->throw_exception(CppJSON_Error::Unknown_Error);
 			return std::shared_ptr<CppJSON>(error);
 		}
+		/*
+			json文件以一个object{}或者一个array[]的形式呈现，这个解析器只解析最外层为object
+			的json文件，如 [{"v":10},{"v":20}] 这类最外层为array的的json文件则会直接调用
+			invalid_json_text，不符合功能预期。
+			
+			暂未修改
+
+			暂定修改思路：
+				在std::shared_ptr<CppJSON> parser(std::string path, parser_mode mode)的
+				CppJSON* res = parse_object(skip_whitespace(json_text));之前
+				先对skip_whitespace(json_text)的返回值进行处理
+
+				- CppJSON* res = parse_object(skip_whitespace(json_text));
+				+ CppJSON* res;
+				+ std::stringstream& message = skip_whitespace(json_text));
+				+ if (message.peek() == '{')
+				+ 	res = parse_object(message);
+				+ else if (message.peek() == '[')
+				+ 	res = parse_array(message);
+				+ else return invalid_json_text(message);
+		*/
 		CppJSON* res = parse_object(skip_whitespace(json_text));
 		//在json文本后有除终止符外的其他非空白字符
 		if (skip_whitespace(json_text).peek() != -1)
@@ -311,6 +351,7 @@ namespace JSON
 	CppJSON* parse_array(std::stringstream& message);
 	CppJSON* parse_object(std::stringstream& message);
 
+	//识别value类型
 	CppJSON* parse_value(std::stringstream& message)
 	{
 		char ch_mes = message.peek();

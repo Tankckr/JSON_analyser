@@ -9,7 +9,7 @@
 
 namespace JSON
 {
-	/*----------JSON类型----------*/
+/*----------JSON类型----------*/
 	//抽象基类CppJSON，不可实例化
 	class CppJSON
 	{
@@ -146,11 +146,10 @@ namespace JSON
 		void push_back(CppJSON* item) override;
 		void split(const std::string& key_name) override;
 	};
-	/*----------JSON类型----------*/
+/*----------JSON类型----------*/
 
 
-
-	/*----------对外接口----------*/
+/*----------对外接口----------*/
 	//解析函数
 	enum parser_mode { file, text };
 	std::shared_ptr<CppJSON> parser(std::string str, parser_mode mode);
@@ -160,7 +159,7 @@ namespace JSON
 	std::string minify(std::string& msg);
 	//重载 << 运算符方便输出
 	std::ostream& operator << (std::ostream& os, CppJSON* JSON_Print);
-	/*----------对外接口----------*/
+/*----------对外接口----------*/
 }
 
 #endif
