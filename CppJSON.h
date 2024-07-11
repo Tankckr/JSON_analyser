@@ -19,7 +19,7 @@ namespace JSON
 
 		//构造函数与析构函数，构造函数使用初始化列表,析构函数是虚函数
 		CppJSON(CppJSON_Type ini = JSON_Initial, CppJSON* left = nullptr, CppJSON* right = nullptr,
-			const std::string& key_name = "name") :type(ini), prev(left), next(right), child(nullptr), key("name") {}
+			const std::string& key_name = "ininame") :type(ini), prev(left), next(right), child(nullptr), key(key_name) {}
 		virtual ~CppJSON() = 0;
 
 		//修改JSON数据结构内部成员变量

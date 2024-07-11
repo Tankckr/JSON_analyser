@@ -276,6 +276,7 @@ namespace JSON
 /*----------解析模块----------*/
 	//前置声明
 	CppJSON* parse_object(std::stringstream& message);
+	CppJSON* parse_array(std::stringstream& message);
 	//以string参数进行解析
 	std::shared_ptr<CppJSON> parser(std::string path, parser_mode mode)
 	{
@@ -301,27 +302,40 @@ namespace JSON
 			return std::shared_ptr<CppJSON>(error);
 		}
 		/*
-			json文件以一个object{}或者一个array[]的形式呈现，这个解析器只解析最外层为object
-			的json文件，如 [{"v":10},{"v":20}] 这类最外层为array的的json文件则会直接调用
-			invalid_json_text，不符合功能预期。
-			
-			暂未修改
-
-			暂定修改思路：
+			修复bug：
+				json文件以一个object{}或者一个array[]的形式呈现，这个解析器只解析最外层为object
+				的json文件，如 [{"v":10},{"v":20}] 这类最外层为array的的json文件则会直接调用
+				invalid_json_text，不符合功能预期。
+			修改思路：
 				在std::shared_ptr<CppJSON> parser(std::string path, parser_mode mode)的
 				CppJSON* res = parse_object(skip_whitespace(json_text));之前
-				先对skip_whitespace(json_text)的返回值进行处理
+				先对skip_whitespace(json_text)的返回值进行判断
+				ps:提前声明CppJSON* parse_array(std::stringstream& message);
 
-				- CppJSON* res = parse_object(skip_whitespace(json_text));
-				+ CppJSON* res;
-				+ std::stringstream& message = skip_whitespace(json_text));
-				+ if (message.peek() == '{')
-				+ 	res = parse_object(message);
-				+ else if (message.peek() == '[')
-				+ 	res = parse_array(message);
-				+ else return invalid_json_text(message);
+				-	CppJSON* res = parse_object(skip_whitespace(json_text));
+				+	CppJSON* res;
+				+	std::stringstream& message = (skip_whitespace(json_text));
+				+	if (message.peek() == '{')
+				+		res = parse_object(message);
+				+		else if (message.peek() == '[')
+				+		res = parse_array(message);
+				+	else
+				+	{
+				+		invalid_json_text(message);
+				+		return std::shared_ptr<CppJSON>(error);
+				+	}
 		*/
-		CppJSON* res = parse_object(skip_whitespace(json_text));
+		CppJSON* res;
+		std::stringstream& message = (skip_whitespace(json_text));
+		if (message.peek() == '{')
+			res = parse_object(message);
+		else if (message.peek() == '[')
+			res = parse_array(message);
+		else
+		{
+			invalid_json_text(message);
+			return std::shared_ptr<CppJSON>(error);
+		}
 		//在json文本后有除终止符外的其他非空白字符
 		if (skip_whitespace(json_text).peek() != -1)
 		{
@@ -425,9 +439,16 @@ namespace JSON
 		bool num_type = false;
 		//值为number的所有可能出现的字符
 		while (ch_mes == '-' || ch_mes == '+' || ch_mes == 'e' || ch_mes == 'E' || ch_mes == '.' || isdigit(ch_mes))
+		{
 			num_string.push_back(message.get());
 			ch_mes = message.peek();
-			num_type = (ch_mes == '.' || ch_mes == 'e' || ch_mes == 'E') ? true : false; //判断是否为浮点
+			/*
+				解决了小数点或者科学计数法e后面的digit常数将num_type转换回false（即int的bug）
+				-	num_type = (ch_mes == '.' || ch_mes == 'e' || ch_mes == 'E') ? true : false;
+				+	if (ch_mes == '.' || ch_mes == 'e' || ch_mes == 'E') num_type = true;
+			*/
+			if (ch_mes == '.' || ch_mes == 'e' || ch_mes == 'E') num_type = true; //判断是否为浮点
+		}
 		CppJSON_Number* item_number = new CppJSON_Number;
 		if (item_number == nullptr)
 			return bad_allocated();
@@ -448,12 +469,21 @@ namespace JSON
 		if (item_array == nullptr)
 			return bad_allocated();
 		/*
-			没有进行空数组的判断，即空数组[]被认为非法
-
-			暂未修改
+			修复了空数组[]被认为非法的bug
 
 			修改思路：参考parse_object里面的方法
+			
+			+	if (skip_whitespace(message).peek() == ']')
+			+	{
+			+		message.ignore();
+			+		return item_array;
+			+	}
 		*/
+		if (skip_whitespace(message).peek() == ']')
+		{
+			message.ignore();
+			return item_array;
+		}
 		CppJSON* item_child = parse_value(skip_whitespace(message));
 		//解析失败抛出异常
 		if (typeid(*item_child) == typeid(*error))
@@ -487,8 +517,15 @@ namespace JSON
 		if (item_object == nullptr)
 			return bad_allocated();
 		//对象中为key-value键值对，所以首先应该出现key或者 }（空的对象）
+		/*
+			空对象也要记得ignore啊！！！这bug害我一通好找
+			+	message.ignore();
+		*/
 		if (skip_whitespace(message).peek() == '}')
+		{
+			message.ignore();
 			return item_object;
+		}
 		if (message.peek() != '\"')
 			return invalid_json_text(message);
 
@@ -502,7 +539,8 @@ namespace JSON
 
 		message.ignore();
 		CppJSON* item_child = parse_value(skip_whitespace(message));
-		if (typeid(*item_child) == typeid(*error))
+		//解析失败抛出异常
+		if (typeid(item_child) == typeid(error))
 			return error;
 		item_child->set_key(item_keyname);
 		item_object->set_child(item_child);
@@ -543,38 +581,55 @@ namespace JSON
 	std::ostream& print_number(std::ostream& os, CppJSON_Number* pn) { pn->return_numbertype() ? os << pn->return_valuedouble() : os << pn->return_valueint(); return os; }
 	std::ostream& print_array(std::ostream& os, CppJSON_Array* pa)
 	{
-		os << '[';
+		++print_deep;
 		CppJSON* pa_child = pa->return_child();
-		while (pa_child != nullptr)
+		if (pa_child != nullptr)
 		{
-			os << pa_child;
-			pa_child = pa_child->return_next();
-			if (pa_child != nullptr)
-				os << ", ";
+			os << "[\n";
+			while (pa_child != nullptr)
+			{
+				for (int i = 1; i <= print_deep; i++)
+					os << '\t';
+				os << pa_child;
+				pa_child = pa_child->return_next();
+				if (pa_child != nullptr)
+					os << ',';
+				os << '\n';
+			}
+			for (int i = 1; i <= print_deep - 1; i++)
+				os << '\t';
+			os << ']';
 		}
-		os << ']';
+		else os << "[]";
+		--print_deep;
 		return os;
 	}
 	std::ostream& print_object(std::ostream& os, CppJSON_Object* po)
 	{
 		++print_deep;
-		os << '{';
 		CppJSON* po_child = po->return_child();
-		if (po_child != nullptr) os << '\n';
-		while (po_child != nullptr)
+		if (po_child != nullptr)
 		{
-			for (int i = 1; i <= print_deep; i++)
+			os << "{\n";
+			while (po_child != nullptr)
+			{
+				for (int i = 1; i <= print_deep; i++)
+					os << '\t';
+				os << '\"' << po_child->return_key() << "\":";
+				if (po_child->return_type() != CppJSON::CppJSON_Type::JSON_Array && po_child->return_type() != CppJSON::CppJSON_Type::JSON_Object)
+					os << '\t';
+				os << po_child;
+				po_child = po_child->return_next();
+				if (po_child != nullptr)
+					os << ',';
+				os << '\n';
+			}
+			for (int i = 1; i <= print_deep - 1; i++)
 				os << '\t';
-			os << '\"' << po_child->return_key() << "\":\t" << po_child;
-			po_child = po_child->return_next();
-			if (po_child != nullptr)
-				os << ',';
-			os << '\n';
+			os << '}';
 		}
-		for (int i = 1; i <= print_deep - 1; i++)
-			os << '\t';
+		else os << "{}";
 		--print_deep;
-		os << '}';
 		return os;
 	}
 	std::ostream& operator << (std::ostream& os, CppJSON* JSON_Print)
