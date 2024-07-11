@@ -411,6 +411,13 @@ namespace JSON
 	}
 	CppJSON* parse_number(std::stringstream& message)
 	{
+		/*
+			数字读取的方法需要重写以解决非法数字输入的问题
+
+			暂未解决
+
+			解决思路：
+		*/
 		char ch_mes = message.peek();
 		if (ch_mes != '-' && ch_mes != '+' && !isdigit(ch_mes))
 			return invalid_json_text(message);
@@ -418,7 +425,9 @@ namespace JSON
 		bool num_type = false;
 		//值为number的所有可能出现的字符
 		while (ch_mes == '-' || ch_mes == '+' || ch_mes == 'e' || ch_mes == 'E' || ch_mes == '.' || isdigit(ch_mes))
-			num_string.push_back(message.get()), ch_mes = message.peek(), num_type = (ch_mes == '.' || ch_mes == 'e' || ch_mes == 'E') ? true : false;
+			num_string.push_back(message.get());
+			ch_mes = message.peek();
+			num_type = (ch_mes == '.' || ch_mes == 'e' || ch_mes == 'E') ? true : false; //判断是否为浮点
 		CppJSON_Number* item_number = new CppJSON_Number;
 		if (item_number == nullptr)
 			return bad_allocated();
@@ -438,6 +447,13 @@ namespace JSON
 		CppJSON_Array* item_array = new CppJSON_Array;
 		if (item_array == nullptr)
 			return bad_allocated();
+		/*
+			没有进行空数组的判断，即空数组[]被认为非法
+
+			暂未修改
+
+			修改思路：参考parse_object里面的方法
+		*/
 		CppJSON* item_child = parse_value(skip_whitespace(message));
 		//解析失败抛出异常
 		if (typeid(*item_child) == typeid(*error))
@@ -513,11 +529,11 @@ namespace JSON
 		message.ignore();
 		return item_object;
 	}
-	/*----------解析模块----------*/
+/*----------解析模块----------*/
 
 
 
-	/*----------输出模块----------*/
+/*----------输出模块----------*/
 	//静态全局变量deep用来反映输出时的递归深度以格式化输出
 	static int print_deep = 0;
 	//输出函数
@@ -541,22 +557,24 @@ namespace JSON
 	}
 	std::ostream& print_object(std::ostream& os, CppJSON_Object* po)
 	{
-		++print_deep, os << '{';
+		++print_deep;
+		os << '{';
 		CppJSON* po_child = po->return_child();
 		if (po_child != nullptr) os << '\n';
 		while (po_child != nullptr)
 		{
 			for (int i = 1; i <= print_deep; i++)
 				os << '\t';
-			os << '\"' << po_child->return_key() << "\":\t";
-			os << po_child;
+			os << '\"' << po_child->return_key() << "\":\t" << po_child;
 			po_child = po_child->return_next();
 			if (po_child != nullptr)
 				os << ',';
 			os << '\n';
 		}
-		for (int i = 1; i <= print_deep - 1; i++) os << '\t';
-		--print_deep, os << '}';
+		for (int i = 1; i <= print_deep - 1; i++)
+			os << '\t';
+		--print_deep;
+		os << '}';
 		return os;
 	}
 	std::ostream& operator << (std::ostream& os, CppJSON* JSON_Print)
@@ -572,5 +590,5 @@ namespace JSON
 		default: error->throw_exception(CppJSON_Error::Invalid_Type); return os; break;
 		}
 	}
-	/*----------输出模块----------*/
+/*----------输出模块----------*/
 }
