@@ -246,7 +246,7 @@ namespace JSON
 		}
 		msg[point_write] = '\0';
 		std::string res(msg, 0, ++point_write);
-		std::cout << res << std::endl;
+		//std::cout << res << std::endl;
 		return res;
 	}
 	//跳过空白格
@@ -585,16 +585,24 @@ namespace JSON
 		CppJSON* pa_child = pa->return_child();
 		if (pa_child != nullptr)
 		{
-			os << "[\n";
-			while (pa_child != nullptr)
+			os << '[';
+			if (pa_child->return_type() != CppJSON::JSON_Object)
 			{
+				os <<'\n';
 				for (int i = 1; i <= print_deep; i++)
 					os << '\t';
+			}
+			while (pa_child != nullptr)
+			{
 				os << pa_child;
 				pa_child = pa_child->return_next();
 				if (pa_child != nullptr)
-					os << ',';
-				os << '\n';
+				{
+					os << ',' << '\n';
+					for (int i = 1; i <= print_deep; i++)
+						os << '\t';
+				}
+				else os << '\n';
 			}
 			for (int i = 1; i <= print_deep - 1; i++)
 				os << '\t';
@@ -616,7 +624,7 @@ namespace JSON
 				for (int i = 1; i <= print_deep; i++)
 					os << '\t';
 				os << '\"' << po_child->return_key() << "\":";
-				if (po_child->return_type() != CppJSON::CppJSON_Type::JSON_Array && po_child->return_type() != CppJSON::CppJSON_Type::JSON_Object)
+				if (po_child->return_type() != CppJSON::JSON_Array && po_child->return_type() != CppJSON::JSON_Object)
 					os << '\t';
 				os << po_child;
 				po_child = po_child->return_next();
