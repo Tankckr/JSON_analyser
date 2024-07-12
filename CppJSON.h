@@ -9,7 +9,7 @@
 
 namespace JSON
 {
-	/*----------JSON类型----------*/
+/*----------JSON类型----------*/
 	//抽象基类CppJSON，不可实例化
 	class CppJSON
 	{
@@ -19,7 +19,7 @@ namespace JSON
 
 		//构造函数与析构函数，构造函数使用初始化列表,析构函数是虚函数
 		CppJSON(CppJSON_Type ini = JSON_Initial, CppJSON* left = nullptr, CppJSON* right = nullptr,
-			const std::string& key_name = "name") :type(ini), prev(left), next(right), child(nullptr), key("name") {}
+			const std::string& key_name = "ininame") :type(ini), prev(left), next(right), child(nullptr), key(key_name) {}
 		virtual ~CppJSON() = 0;
 
 		//修改JSON数据结构内部成员变量
@@ -146,11 +146,10 @@ namespace JSON
 		void push_back(CppJSON* item) override;
 		void split(const std::string& key_name) override;
 	};
-	/*----------JSON类型----------*/
+/*----------JSON类型----------*/
 
 
-
-	/*----------对外接口----------*/
+/*----------对外接口----------*/
 	//解析函数
 	enum parser_mode { file, text };
 	std::shared_ptr<CppJSON> parser(std::string str, parser_mode mode);
@@ -160,7 +159,7 @@ namespace JSON
 	std::string minify(std::string& msg);
 	//重载 << 运算符方便输出
 	std::ostream& operator << (std::ostream& os, CppJSON* JSON_Print);
-	/*----------对外接口----------*/
+/*----------对外接口----------*/
 }
 
 #endif
