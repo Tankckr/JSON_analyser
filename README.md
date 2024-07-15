@@ -38,10 +38,11 @@
 ---
 ## 设计思路
 ### 数据输入流程
-![json输入流程](./pic_src/json输入流程.png)
+![json输入流程](./pic_src/parser_file.png)
 
 ### 数据结构
-	class JSON_value	//基类
+	class MyJSON							//外部接口类，表示一个json文件
+	class JSON_value						//基类
 
 	class JSON_object: public JSON_value	//object类型数据
 	class JSON_member: public JSON_value	//object下面的‘string:value’对
@@ -90,29 +91,38 @@
 	S'-> O|A		//json文件从object或者array开始
 	O -> {ON}
 	A -> [AN]
-	ON-> M,ON|M|ε	//multi one or void
-	AN-> V,AN|V|ε	//same as above
+	ON-> M,ON|M|ε	//object列表项可以是一个或多个或者空
+	AN-> V,AN|V|ε	//array列表项同理
 	M -> s:V
 	V -> O|A|s|n|b|u
+>其实json格式解析也可以看作一个大的object或者array词法分析
 
 #### json解析主流程
 ![json文件主流程](./pic_src/parser_json_file.png)
-### 类和树形结构
-	class JSON_value
+
+---
+## 接口设计
+### 调用接口
+>接口全部封装在***MyJSON类***中，创建MyJSON对象解析json文件
+
+	MyJSON
 	{
-		JSON_value* left, *right, *child;	//左右兄弟和儿子
-	public:
-		JSON_value* get_left();
+		string fileName;	//如果需要保存文件的名字日期创作者什么的就再开个struct
 		...
 
-		void set_left();
-		...
+		bool type;			// object:type = 0, array:type=1
+	public：
+		void PrintJson (ostream& os = cout);		//打印json数据，默认cout
+		void PrintJsonMinify (ostream& os = cout);	//最小化打印json数据(无空白)
+		
+		void PrintInfo (ostream& os = cout);		//打印文件信息
+		void PrintAll (ostream& os = cout);			//打印所有信息(json不允许有注释要不就cout算了)
 
-        JSON_value():left(nullptr){}
-		virtual ostream& print(ostream& os = std::cout) = 0;	//可以输出到终端或文件
-	};
-
-	class JSON_object: public JSON_value
-	{
-
+		bool get_type();
+		//根据文件type({}还是[])分别对应不同的索引
+		JSON_value& operator [] (int pos) const;
+		JSON_value& operator [] (const string key_name) const;
+		//看来json_value要重载<<了 :(
+		
+		//有其他遗漏的后面再写进来	orz
 	};
