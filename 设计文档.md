@@ -41,12 +41,10 @@
 ![json输入流程](./pic_src/parser_file.png)
 
 ### 数据结构
-	class MyJSON							//外部接口类，表示一个json文件
 	class JSON_value						//基类
 
-	class JSON_object: public JSON_value	//object类型数据
-	class JSON_member: public JSON_value	//object下面的‘string:value’对
-	class JSON_array: public JSON_value		//array类型数据
+	class JSON_object: public JSON_value	//object类型数据	通过std::unordered_map<JSON_value>实现
+	class JSON_array: public JSON_value		//array类型数据		通过std::vector<JSON_value>实现
 	class JSON_string: public JSON_value	//string类型数据
 	class JSON_number: public JSON_value	//number类型数据
 	class JSON_bool: public JSON_value		//true,false两个bool型
@@ -123,6 +121,10 @@
 		JSON_value& operator [] (int pos) const;
 		JSON_value& operator [] (const string key_name) const;
 		//看来json_value要重载<<了 :(
+
+		//读取接口
+		JSON_value& parser_file (string path);
+		JSON_value& parser_stream (ostream& os);
 		
 		//有其他遗漏的后面再写进来	orz
 	};
