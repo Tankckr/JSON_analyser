@@ -2,6 +2,7 @@
 
 #include<iostream>
 #include<sstream>
+#include<stdint.h>
 #include<unordered_map>
 #include<vector>
 #include<variant>
@@ -13,21 +14,13 @@ namespace MyJSON
 					Jstring, Jnumber, Jbool, Jnull};
 	class JSON_value
 	{
-		// JSON_value* left = nullptr;
-		// JSON_value* right = nullptr;
 		JSONTYPE type = Jinitial;
 
 	public:
 		JSONTYPE Get_type(){return type;}
 
-		// JSON_value* Get_left(){return left;}
-		// JSON_value* Get_right(){return right;}
-
-		// void Set_left(JSON_value* p){left = p;}
-		// void Set_right(JSON_value* p){right = p;}
-
 		virtual JSON_value* Parser(std::stringstream& ss);
-		virtual std::ostream& Print(std::stringstream& ss);
+		virtual std::ostream& Print(std::ostream& os = std::cout);
 
 		JSON_value(JSONTYPE _type = Jinitial):type(_type){}
 		virtual ~JSON_value(){}
@@ -39,7 +32,7 @@ namespace MyJSON
 
 	public:
 		JSON_value* Parser(std::stringstream& ss) override;
-		std::ostream& Print(std::stringstream& ss) override;
+		std::ostream& Print(std::ostream& os = std::cout) override;
 
 		JSON_value& operator [] (std::string key){return *child[key];}
 		int Get_size(){return child.size();}
@@ -55,7 +48,7 @@ namespace MyJSON
 
 	public:
 		JSON_value* Parser(std::stringstream& ss) override;
-		std::ostream& Print(std::stringstream& ss) override;
+		std::ostream& Print(std::ostream& os = std::cout) override;
 
 		JSON_value& operator [] (int index);		//index
 		int Get_size(){return child.size();}		//nums of child
@@ -72,7 +65,7 @@ namespace MyJSON
 
 	public:
 		JSON_value* Parser(std::stringstream& ss) override;
-		std::ostream& Print(std::stringstream& ss) override;
+		std::ostream& Print(std::ostream& os = std::cout) override;
 
 		std::string Get_value(){return value;}
 		void Set_value(std::string _v){value = _v;}
@@ -91,10 +84,8 @@ namespace MyJSON
 		bool outOfRange = false;
 	public:
 		JSON_value* Parser(std::stringstream& ss) override;
-		std::ostream& Print(std::stringstream& ss) override;
+		std::ostream& Print(std::ostream& os = std::cout) override;
 
-		// int Get_value_int(){return valueInt;}
-		// double Get_value_double(){return valueDouble;}
 		std::variant<int64_t, double, std::string> Get_value();
 		std::string Get_value_string(){return valueLarge;}
 		std::string Get_value_type(){return outOfRange?"string":(valueType?"double":"int64");}
@@ -111,7 +102,7 @@ namespace MyJSON
 
 	public:
 		JSON_value* Parser(std::stringstream& ss) override;
-		std::ostream& Print(std::stringstream& ss) override;
+		std::ostream& Print(std::ostream& os = std::cout) override;
 
 		bool Get_value(){return value;}
 		void Set_value(bool _v){value = _v;}
@@ -124,7 +115,7 @@ namespace MyJSON
 	{
 	public:
 		JSON_value* Parser(std::stringstream& ss) override;
-		std::ostream& Print(std::stringstream& ss) override;
+		std::ostream& Print(std::ostream& os = std::cout) override;
 
 		JSON_null():JSON_value(Jnull){}
 		~JSON_null(){}
@@ -132,8 +123,6 @@ namespace MyJSON
 
 	class JSON_error: public JSON_value
 	{
-		std::vector<std::string> ErrorList;
-		
 		std::string File_Error = "File_Error:Can not open the JSON file or Empty file.";
 		const std::string Error_Type = "the first type of error";
 		const std::string ERROR2 = "......";
@@ -141,23 +130,29 @@ namespace MyJSON
 	public:
 		enum ERRORTYPE
 		{
-			ErrorType_Object,
-			ErrorType_Array,
-			ErrorType_String,
-			ErrorType_Number,
-			ErrorType_Bool,
-			ErrorType_UnknownType,
-
-			Error_ValueOutOfRange,
-			Error_BrokenFile,
-
-			E_No_Error,
-			E_File_Error,
-			E_Error_Type,
+			ErrorType_Object,		//"TypeError: The object struct is not valid."
+			ErrorType_Array,		//"TypeError: The array struct is not valid."
+			ErrorType_String,		//"TypeError: The string struct is not valid, maybe omit '\"'?"
+			ErrorType_Number,		//"TypeError: The number is not valid, maybe some char in it?"
+			ErrorType_UnknownType,	//"TypeError: Unknown Value Type, please check your spelling."
+			
+			Error_BrokenFile,		//"FileError: Stream unexpectedly over."
+			No_Error,
 		};
-		JSON_error(ERRORTYPE e = E_No_Error, int p = 0):JSON_value(Jerror),type(e),position(p){}
+		JSON_error(ERRORTYPE e = No_Error, int p = 0):JSON_value(Jerror),type(e),position(p)
+		{
+			std::vector<std::string> ErrorList;
+			ErrorList.push_back("TypeError: The object struct is not valid.");
+			ErrorList.push_back("TypeError: The array struct is not valid.");
+			ErrorList.push_back("TypeError: The string struct is not valid, maybe omit '\"'.");
+			ErrorList.push_back("TypeError: The number is not valid, maybe some char in it?");
+			ErrorList.push_back("TypeError: Unknown Value Type, please check your spelling.");
+			
+			ErrorList.push_back("FileError: Stream unexpectedly over.");
+			ErrorList.push_back("NoError: It means no error, but if you see this, sth went wrong!");
+		}
 	private:
-		ERRORTYPE type = E_No_Error;
+		ERRORTYPE type;
 		int position;
 	};
 

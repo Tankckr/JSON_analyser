@@ -3,35 +3,7 @@
 
 namespace MyJSON
 {
-	JSON_error GlobalError;
-
-	// JSON_value* JSON_Parser(std::stringstream& ss)
-	// {
-	// 	char ch = ss.peek();
-	// 	switch (ch)
-	// 	{
-	// 		case EOF: break;
-	// 		case '{':{
-	// 			JSON_value* I = new JSON_object();
-	// 			I->Parser(ss);
-	// 			return I;
-	// 		}
-	// 		case '[':{
-	// 			JSON_value* I = new JSON_array();
-	// 			I->Parser(ss);
-	// 			return I;
-	// 		}
-	// 		case '"':{
-	// 			JSON_value* I = new JSON_string();
-	// 			I->Parser(ss);
-	// 			return I;
-	// 		}
-	// 		case 't': case 'f':{
-	// 			JSON_value* I = new JSON_bool();
-	// 		}
-	// 	}
-
-	// }
+	// JSON_error GlobalError;
 
 /*----------功能函数----------*/
 	void IgnoreBlank(std::stringstream& ss)
@@ -46,6 +18,40 @@ namespace MyJSON
 
 /*----------类函数----------*/
 /*-----解析函数-----*/
+	/*---JSON_value---*/
+	JSON_value* JSON_value::Parser(std::stringstream& ss)
+	{
+		//WARNING JSON_value的parser不会变更自身指针，如果在最外层处理的时候记得获取返回值
+		IgnoreBlank(ss);
+		char ch = ss.peek();
+		if(ch == '{'){
+			JSON_object* ret;
+			return ret->Parser(ss);
+		}
+		if(ch == '['){
+			JSON_array* ret;
+			return ret->Parser(ss);
+		}
+		if(ch == '"'){
+			JSON_string* ret;
+			return ret->Parser(ss);
+		}
+		if(ch == '-' || (ch <= '9' && ch >= '0')){
+			JSON_number* ret;
+			return ret->Parser(ss);
+		}
+		if(ch == 't' || ch == 'f'){
+			JSON_bool* ret;
+			return ret->Parser(ss);
+		}
+		if(ch == 'n'){
+			JSON_null*ret;
+			return ret->Parser(ss);
+		}
+		//else
+		return new JSON_error(JSON_error::ErrorType_UnknownType, ss.tellg());
+	}
+	/*---JSON_value---*/
 	/*---JSON_object---*/
 	JSON_value* JSON_object::Parser(std::stringstream& ss)
 	{
@@ -77,7 +83,7 @@ namespace MyJSON
 			/*---:---*/
 			/*---value---*/
 			JSON_value* parserV;
-			parserV->Parser(ss);
+			parserV = parserV->Parser(ss);
 			/*---value---*/
 			Insert(key, parserV);	//Error也可以插进去，不至于一个error使得全部解析失败
 			/*---next---*/
@@ -105,7 +111,7 @@ namespace MyJSON
 		{
 			/*---value---*/
 			JSON_value* parser;
-			parser->Parser(ss);
+			parser = parser->Parser(ss);
 			/*---value---*/
 			Insert(Get_size(), parser);
 			/*---next---*/
@@ -227,7 +233,24 @@ namespace MyJSON
 	/*---JSON_null---*/
 /*-----解析函数-----*/
 /*-----打印函数-----*/
+	/*---JSON_object---*/
+	std::ostream& JSON_object::Print(std::ostream& os = std::cout)
+	{
+		;
+	}
+	/*---JSON_object---*/
+	/*---JSON_array---*/
+	std::ostream& JSON_array::Print(std::ostream& os = std::cout)
+	{
+		;
+	}
+	/*---JSON_array---*/
 	/*---JSON_number---*/
+	std::ostream& JSON_number::Print(std::ostream& os = std::cout)
+	{
+		os << valueLarge;
+		return os;
+	}
 	std::variant<int64_t, double, std::string> JSON_number::Get_value()
 	{
 		if(outOfRange)
@@ -238,6 +261,26 @@ namespace MyJSON
 			return valueInt;
 	}
 	/*---JSON_number---*/
+	/*---JSON_bool---*/
+	std::ostream& JSON_bool::Print(std::ostream& os = std::cout)
+	{
+		if(value){
+			os << "true";
+		}
+		else{
+			os << "false";
+		}
+		return os;
+	}
+	/*---JSON_bool---*/
+	/*---JSON_null---*/
+	std::ostream& JSON_null::Print(std::ostream& os = std::cout)
+	{
+		os << "null";
+		return os;
+	}
+	/*---JSON_null---*/
+
 	/*-----打印函数-----*/
 
 	/*----------类函数----------*/
