@@ -4,26 +4,27 @@
 #include<sstream>
 #include<unordered_map>
 #include<vector>
+#include<variant>
 
 namespace MyJSON
 {
 	/*----------类定义----------*/
-	enum JSONTYPE{Jinitial, Jobject, Jarray,
+	enum JSONTYPE{Jerror = -1, Jinitial, Jobject, Jarray,
 					Jstring, Jnumber, Jbool, Jnull};
 	class JSON_value
 	{
-		JSON_value* left = nullptr;
-		JSON_value* right = nullptr;
+		// JSON_value* left = nullptr;
+		// JSON_value* right = nullptr;
 		JSONTYPE type = Jinitial;
 
 	public:
 		JSONTYPE Get_type(){return type;}
 
-		JSON_value* Get_left(){return left;}
-		JSON_value* Get_right(){return right;}
+		// JSON_value* Get_left(){return left;}
+		// JSON_value* Get_right(){return right;}
 
-		void Set_left(JSON_value* p){left = p;}
-		void Set_right(JSON_value* p){right = p;}
+		// void Set_left(JSON_value* p){left = p;}
+		// void Set_right(JSON_value* p){right = p;}
 
 		virtual JSON_value* Parser(std::stringstream& ss);
 		virtual std::ostream& Print(std::stringstream& ss);
@@ -40,11 +41,12 @@ namespace MyJSON
 		JSON_value* Parser(std::stringstream& ss) override;
 		std::ostream& Print(std::stringstream& ss) override;
 
-		JSON_value& operator [] (std::string key);	//index
-		int Get_size(){return child.size();}		//nums of child
-		void Insert(JSON_value* n);					//insert
+		JSON_value& operator [] (std::string key){return *child[key];}
+		int Get_size(){return child.size();}
+		void Insert(std::string key, JSON_value* value){child[key] = value;}
 
 		JSON_object():JSON_value(Jobject){}
+		~JSON_object(){}//释放map？
 	};
 
 	class JSON_array: public JSON_value
@@ -57,14 +59,16 @@ namespace MyJSON
 
 		JSON_value& operator [] (int index);		//index
 		int Get_size(){return child.size();}		//nums of child
-		void Insert_to(int pos, JSON_value* n);		//insert
+		//position in (0~size)
+		void Insert(int pos, JSON_value* n){child.insert(child.begin()+pos, n);}
 
 		JSON_array():JSON_value(Jarray){}
+		~JSON_array(){}//释放vector？
 	};
 
 	class JSON_string: public JSON_value
 	{
-		std::string value;
+		std::string value = "";
 
 	public:
 		JSON_value* Parser(std::stringstream& ss) override;
@@ -74,24 +78,31 @@ namespace MyJSON
 		void Set_value(std::string _v){value = _v;}
 
 		JSON_string():JSON_value(Jstring){}
+		~JSON_string(){}
 	};
 
 	class JSON_number: public JSON_value
 	{
-		int valueInt = 0;
-		int valueDouble = 0;
-		bool valueType = false;	//false: Int, true: double
+		int64_t valueInt = 0;
+		double valueDouble = 0;
+		std::string valueLarge = "initial";
 
+		bool valueType = false;	//false: Int, true: double
+		bool outOfRange = false;
 	public:
 		JSON_value* Parser(std::stringstream& ss) override;
 		std::ostream& Print(std::stringstream& ss) override;
 
-		int Get_value_int(){return valueInt;}
-		double Get_value_double(){return valueDouble;}
-		bool Get_value_type(){return valueType;}
-		void Set_value(std::string _v);
+		// int Get_value_int(){return valueInt;}
+		// double Get_value_double(){return valueDouble;}
+		std::variant<int64_t, double, std::string> Get_value();
+		std::string Get_value_string(){return valueLarge;}
+		std::string Get_value_type(){return outOfRange?"string":(valueType?"double":"int64");}
+
+		bool Set_value(std::string _v);
 
 		JSON_number():JSON_value(Jnumber){}
+		~JSON_number(){}
 	};
 
 	class JSON_bool: public JSON_value
@@ -106,6 +117,7 @@ namespace MyJSON
 		void Set_value(bool _v){value = _v;}
 
 		JSON_bool():JSON_value(Jbool){}
+		~JSON_bool(){}
 	};
 
 	class JSON_null: public JSON_value
@@ -115,21 +127,38 @@ namespace MyJSON
 		std::ostream& Print(std::stringstream& ss) override;
 
 		JSON_null():JSON_value(Jnull){}
+		~JSON_null(){}
 	};
 
-	class JSON_error
+	class JSON_error: public JSON_value
 	{
-	public:
-		enum ERRORTYPE
-		{
-			E_No_Error,
-			E_Error_Type,
-			E_File_Cannot_Open,
-		};
+		std::vector<std::string> ErrorList;
+		
+		std::string File_Error = "File_Error:Can not open the JSON file or Empty file.";
 		const std::string Error_Type = "the first type of error";
 		const std::string ERROR2 = "......";
 
-		static void ERROR(ERRORTYPE e, std::ostream& os = std::cout);
+	public:
+		enum ERRORTYPE
+		{
+			ErrorType_Object,
+			ErrorType_Array,
+			ErrorType_String,
+			ErrorType_Number,
+			ErrorType_Bool,
+			ErrorType_UnknownType,
+
+			Error_ValueOutOfRange,
+			Error_BrokenFile,
+
+			E_No_Error,
+			E_File_Error,
+			E_Error_Type,
+		};
+		JSON_error(ERRORTYPE e = E_No_Error, int p = 0):JSON_value(Jerror),type(e),position(p){}
+	private:
+		ERRORTYPE type = E_No_Error;
+		int position;
 	};
 
 	/*----------类定义----------*/
