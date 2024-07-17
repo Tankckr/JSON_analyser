@@ -49,7 +49,7 @@ namespace MyJSON
 			return ret->Parser(ss);
 		}
 		//else
-		return new JSON_error(JSON_error::ErrorType_UnknownType, ss.tellg());
+		return new JSON_error(ErrorType_UnknownType, ss.tellg());
 	}
 	/*---JSON_value---*/
 	/*---JSON_object---*/
@@ -57,7 +57,7 @@ namespace MyJSON
 	{
 		IgnoreBlank(ss);
 		if (ss.peek() != '{'){
-			return new JSON_error(JSON_error::ErrorType_Object, ss.tellg());
+			return new JSON_error(ErrorType_Object, ss.tellg());
 		}ss.ignore();
 		IgnoreBlank(ss);
 		if(ss.peek() == '}'){	//{}
@@ -78,7 +78,7 @@ namespace MyJSON
 			/*---:---*/
 			IgnoreBlank(ss);
 			if(ss.peek() != ':'){
-				return new JSON_error(JSON_error::ErrorType_Object, ss.tellg());
+				return new JSON_error(ErrorType_Object, ss.tellg());
 			}ss.ignore();
 			/*---:---*/
 			/*---value---*/
@@ -90,10 +90,10 @@ namespace MyJSON
 			IgnoreBlank(ss);
 			if(ss.peek() == ',') continue;
 			else if(ss.peek() == '}') return this;
-			else return new JSON_error(JSON_error::ErrorType_Object, ss.tellg());
+			else return new JSON_error(ErrorType_Object, ss.tellg());
 			/*---next---*/
 		}//不完整的文件
-		return new JSON_error(JSON_error::Error_BrokenFile, ss.tellg());
+		return new JSON_error(Error_BrokenFile, ss.tellg());
 	}
 	/*---JSON_object---*/
 	/*---JSON_array---*/
@@ -101,7 +101,7 @@ namespace MyJSON
 	{
 		IgnoreBlank(ss);
 		if(ss.peek() != '['){
-			return new JSON_error(JSON_error::ErrorType_Array, ss.tellg());
+			return new JSON_error(ErrorType_Array, ss.tellg());
 		}ss.ignore();
 		IgnoreBlank(ss);
 		if(ss.peek() == ']'){
@@ -118,10 +118,10 @@ namespace MyJSON
 			IgnoreBlank(ss);
 			if(ss.peek() == ',') continue;
 			else if(ss.peek() == ']') return this;
-			else return new JSON_error(JSON_error::ErrorType_Array, ss.tellg());
+			else return new JSON_error(ErrorType_Array, ss.tellg());
 			/*---next---*/
 		}
-		return new JSON_error(JSON_error::Error_BrokenFile, ss.tellg());
+		return new JSON_error(Error_BrokenFile, ss.tellg());
 	}
 	/*---JSON_array---*/
 	/*---JSON_string---*/
@@ -137,7 +137,7 @@ namespace MyJSON
 			ss.ignore(match.str().size());
 			return this;
 		}
-		else return new JSON_error(JSON_error::ErrorType_String, ss.tellg());
+		else return new JSON_error(ErrorType_String, ss.tellg());
 	}
 	/*---JSON_string---*/
 	/*---JSON_number---*/
@@ -150,12 +150,12 @@ namespace MyJSON
 		if(std::regex_search(ms, match, number))
 		{
 			if(!Set_value(match.str())){
-				return new JSON_error(JSON_error::ErrorType_Number, ss.tellg());
+				return new JSON_error(ErrorType_Number, ss.tellg());
 			}
 			ss.ignore(match.str().size());
 			return this;
 		}
-		else return new JSON_error(JSON_error::ErrorType_Number, ss.tellg());
+		else return new JSON_error(ErrorType_Number, ss.tellg());
 	}
 
 	bool JSON_number::Set_value(std::string value)
@@ -214,7 +214,7 @@ namespace MyJSON
 		{
 			value = false;
 		}
-		else return new JSON_error(JSON_error::ErrorType_UnknownType, ss.tellg());
+		else return new JSON_error(ErrorType_UnknownType, ss.tellg());
 		return this;
 	}
 	/*---JSON_bool---*/
@@ -228,25 +228,76 @@ namespace MyJSON
 		if (std::regex_search(ms, match, N))
 		{
 			return this;
-		}else return new JSON_error(JSON_error::ErrorType_UnknownType, ss.tellg());
+		}else return new JSON_error(ErrorType_UnknownType, ss.tellg());
 	}
 	/*---JSON_null---*/
 /*-----解析函数-----*/
 /*-----打印函数-----*/
-	/*---JSON_object---*/
-	std::ostream& JSON_object::Print(std::ostream& os = std::cout)
+	//全局缩进
+	int tab_deep = 0;
+	std::ostream& operator<< (std::ostream& os, JSON_value* v)
 	{
-		;
+		if(v->Get_type() != Jinitial){
+			return v->Print(os);
+		}
+	}
+	/*---JSON_value---*/
+
+	//??????????
+
+	/*---JSON_value---*/
+	/*---JSON_object---*/
+	std::ostream& JSON_object::Print(std::ostream& os)
+	{
+		if(Get_size() == 0){
+			os << "{}";
+			return os;
+		}
+		tab_deep++;
+		os << "{\n";
+		for(auto it = child.begin(); it != child.end(); ++it)
+		{
+			auto [k,v] = *it;
+			for(int i = 0; i < tab_deep; i++)
+			{
+				os<<'\t';
+			}
+			os << k << v;
+			if(std::next(it) != child.end()){
+				os << ',';
+			}
+			os << '\n';
+		}
+		tab_deep--;
+		os << '}';
+		return os;
 	}
 	/*---JSON_object---*/
 	/*---JSON_array---*/
-	std::ostream& JSON_array::Print(std::ostream& os = std::cout)
+	std::ostream& JSON_array::Print(std::ostream& os)
 	{
-		;
+		if(Get_size() == 0){
+			os << "[]";
+			return os;
+		}
+		tab_deep++;
+		os << "[\n";
+		int n = child.size();
+		for(int i = 0; i < n; i++)
+		{
+			os << child[i];
+			if (i != n-1){
+				os << ',';
+			}
+			os << '\n';
+		}
+		tab_deep--;
+		os << ']';
+		return os;
 	}
 	/*---JSON_array---*/
 	/*---JSON_number---*/
-	std::ostream& JSON_number::Print(std::ostream& os = std::cout)
+	std::ostream& JSON_number::Print(std::ostream& os)
 	{
 		os << valueLarge;
 		return os;
@@ -262,7 +313,7 @@ namespace MyJSON
 	}
 	/*---JSON_number---*/
 	/*---JSON_bool---*/
-	std::ostream& JSON_bool::Print(std::ostream& os = std::cout)
+	std::ostream& JSON_bool::Print(std::ostream& os)
 	{
 		if(value){
 			os << "true";
@@ -274,12 +325,16 @@ namespace MyJSON
 	}
 	/*---JSON_bool---*/
 	/*---JSON_null---*/
-	std::ostream& JSON_null::Print(std::ostream& os = std::cout)
+	std::ostream& JSON_null::Print(std::ostream& os)
 	{
 		os << "null";
 		return os;
 	}
 	/*---JSON_null---*/
+	/*---JSON_error---*/
+	std::ostream& JSON_error::Print(std::ostream& os)
+	{}
+	/*---JSON_error---*/
 
 	/*-----打印函数-----*/
 
