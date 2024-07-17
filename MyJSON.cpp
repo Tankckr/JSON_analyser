@@ -19,6 +19,12 @@ namespace MyJSON
 /*----------类函数----------*/
 /*-----解析函数-----*/
 	/*---JSON_value---*/
+	JSON_value* JSON_value::Parser(std::fstream& fs)
+	{
+		std::stringstream ss;
+		ss << fs.rdbuf();
+		return Parser(ss);
+	}
 	JSON_value* JSON_value::Parser(std::stringstream& ss)
 	{
 		//WARNING JSON_value的parser不会变更自身指针，如果在最外层处理的时候记得获取返回值
@@ -49,7 +55,7 @@ namespace MyJSON
 			return ret->Parser(ss);
 		}
 		//else
-		return new JSON_error(ErrorType_UnknownType, ss.tellg());
+		return new JSON_error(SyntaxError_UnknownType, ss.tellg());
 	}
 	/*---JSON_value---*/
 	/*---JSON_object---*/
@@ -57,7 +63,7 @@ namespace MyJSON
 	{
 		IgnoreBlank(ss);
 		if (ss.peek() != '{'){
-			return new JSON_error(ErrorType_Object, ss.tellg());
+			return new JSON_error(SyntaxError_Object, ss.tellg());
 		}ss.ignore();
 		IgnoreBlank(ss);
 		if(ss.peek() == '}'){	//{}
@@ -68,17 +74,16 @@ namespace MyJSON
 		{
 			/*---"key"---*/
 			JSON_string parserS;
-			JSON_value* ErrorReporter;
-			ErrorReporter = parserS.Parser(ss);
-			if(ErrorReporter->Get_type() == Jerror){
-				return ErrorReporter;
+			parserS.Parser(ss);
+			if(parserS.Get_type() == Jerror){
+				return new JSON_error(SyntaxError_Object, ss.tellg());
 			}
 			std::string key = parserS.Get_value();
 			/*---"key"---*/
 			/*---:---*/
 			IgnoreBlank(ss);
 			if(ss.peek() != ':'){
-				return new JSON_error(ErrorType_Object, ss.tellg());
+				return new JSON_error(SyntaxError_Object, ss.tellg());
 			}ss.ignore();
 			/*---:---*/
 			/*---value---*/
@@ -90,7 +95,7 @@ namespace MyJSON
 			IgnoreBlank(ss);
 			if(ss.peek() == ',') continue;
 			else if(ss.peek() == '}') return this;
-			else return new JSON_error(ErrorType_Object, ss.tellg());
+			else return new JSON_error(SyntaxError_Object, ss.tellg());
 			/*---next---*/
 		}//不完整的文件
 		return new JSON_error(Error_BrokenFile, ss.tellg());
@@ -101,7 +106,7 @@ namespace MyJSON
 	{
 		IgnoreBlank(ss);
 		if(ss.peek() != '['){
-			return new JSON_error(ErrorType_Array, ss.tellg());
+			return new JSON_error(SyntaxError_Array, ss.tellg());
 		}ss.ignore();
 		IgnoreBlank(ss);
 		if(ss.peek() == ']'){
@@ -118,7 +123,7 @@ namespace MyJSON
 			IgnoreBlank(ss);
 			if(ss.peek() == ',') continue;
 			else if(ss.peek() == ']') return this;
-			else return new JSON_error(ErrorType_Array, ss.tellg());
+			else return new JSON_error(SyntaxError_Array, ss.tellg());
 			/*---next---*/
 		}
 		return new JSON_error(Error_BrokenFile, ss.tellg());
@@ -137,7 +142,7 @@ namespace MyJSON
 			ss.ignore(match.str().size());
 			return this;
 		}
-		else return new JSON_error(ErrorType_String, ss.tellg());
+		else return new JSON_error(SyntaxError_String, ss.tellg());
 	}
 	/*---JSON_string---*/
 	/*---JSON_number---*/
@@ -150,12 +155,12 @@ namespace MyJSON
 		if(std::regex_search(ms, match, number))
 		{
 			if(!Set_value(match.str())){
-				return new JSON_error(ErrorType_Number, ss.tellg());
+				return new JSON_error(SyntaxError_Number, ss.tellg());
 			}
 			ss.ignore(match.str().size());
 			return this;
 		}
-		else return new JSON_error(ErrorType_Number, ss.tellg());
+		else return new JSON_error(SyntaxError_Number, ss.tellg());
 	}
 
 	bool JSON_number::Set_value(std::string value)
@@ -214,7 +219,7 @@ namespace MyJSON
 		{
 			value = false;
 		}
-		else return new JSON_error(ErrorType_UnknownType, ss.tellg());
+		else return new JSON_error(SyntaxError_UnknownType, ss.tellg());
 		return this;
 	}
 	/*---JSON_bool---*/
@@ -228,7 +233,7 @@ namespace MyJSON
 		if (std::regex_search(ms, match, N))
 		{
 			return this;
-		}else return new JSON_error(ErrorType_UnknownType, ss.tellg());
+		}else return new JSON_error(SyntaxError_UnknownType, ss.tellg());
 	}
 	/*---JSON_null---*/
 /*-----解析函数-----*/
@@ -240,11 +245,12 @@ namespace MyJSON
 		if(v->Get_type() != Jinitial){
 			return v->Print(os);
 		}
+		else{
+			os << "Error, can not print void JSON\n";
+		}
 	}
 	/*---JSON_value---*/
-
-	//??????????
-
+	//initial直接报错，毕竟没有JSON_value的值
 	/*---JSON_value---*/
 	/*---JSON_object---*/
 	std::ostream& JSON_object::Print(std::ostream& os)
@@ -296,6 +302,13 @@ namespace MyJSON
 		return os;
 	}
 	/*---JSON_array---*/
+	/*---JSON_string---*/
+	std::ostream& JSON_string::Print(std::ostream& os)
+	{
+		os << value;
+		return os;
+	}
+	/*---JSON_string---*/
 	/*---JSON_number---*/
 	std::ostream& JSON_number::Print(std::ostream& os)
 	{
@@ -333,9 +346,11 @@ namespace MyJSON
 	/*---JSON_null---*/
 	/*---JSON_error---*/
 	std::ostream& JSON_error::Print(std::ostream& os)
-	{}
+	{
+		os << errorType;
+		return os;
+	}
 	/*---JSON_error---*/
-
 	/*-----打印函数-----*/
 
 	/*----------类函数----------*/
