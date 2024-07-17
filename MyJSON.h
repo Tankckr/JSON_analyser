@@ -2,6 +2,7 @@
 
 #include<iostream>
 #include<sstream>
+#include<fstream>
 #include<stdint.h>
 #include<unordered_map>
 #include<vector>
@@ -20,8 +21,9 @@ namespace MyJSON
 		JSONTYPE Get_type(){return type;}
 
 		virtual JSON_value* Parser(std::stringstream& ss);
-		virtual std::ostream& Print(std::ostream& os);
-		//std::ostream& operator << (std::ostream& os, const JSON_value* v);
+		JSON_value* Parser(std::fstream& fs);
+
+		virtual std::ostream& Print(std::ostream& os) = 0;
 		JSON_value(JSONTYPE _type = Jinitial):type(_type){}
 		virtual ~JSON_value(){}
 	};
@@ -50,9 +52,9 @@ namespace MyJSON
 		JSON_value* Parser(std::stringstream& ss) override;
 		std::ostream& Print(std::ostream& os) override;
 
-		JSON_value& operator [] (int index);		//index
-		int Get_size(){return child.size();}		//nums of child
-		//position in (0~size)
+		JSON_value& operator [] (int index){return *child[index];}
+		int Get_size(){return child.size();}
+		//position in [0~size]
 		void Insert(int pos, JSON_value* n){child.insert(child.begin()+pos, n);}
 
 		JSON_array():JSON_value(Jarray){}
@@ -122,44 +124,30 @@ namespace MyJSON
 	};
 
 	/*Errors*/
-	std::string ErrorType_Object =		"TypeError: The object struct is not valid.";
-	std::string ErrorType_Array =		"TypeError: The array struct is not valid.";
-	std::string ErrorType_String =		"TypeError: The string struct is not valid, maybe omit '\"'?";
-	std::string ErrorType_Number =		"TypeError: The number is not valid, maybe some char in it?";
-	std::string ErrorType_UnknownType =	"TypeError: Unknown Value Type, please check your spelling.";
+	// std::string SyntaxError_Object =		"TypeError: The object struct is not valid.";
+	// std::string SyntaxError_Array =		"TypeError: The array struct is not valid.";
+	// std::string SyntaxError_String =		"TypeError: The string struct is not valid, maybe omit '\"'?";
+	// std::string SyntaxError_Number =		"TypeError: The number is not valid, maybe some char in it?";
+	// std::string SyntaxError_UnknownType =	"TypeError: Unknown Value Type, please check your spelling.";
+	// std::string Error_BrokenFile = "FileError: Stream unexpectedly over.";
+	// std::string No_Error = "";
+	std::string SyntaxError_Object = "SyntaxError: object";
+	std::string SyntaxError_Array = "SyntaxError: array";
+	std::string SyntaxError_String = "SyntaxError: string";
+	std::string SyntaxError_Number = "SyntaxError: number";
+	std::string SyntaxError_UnknownType = "TypeError: Unknown Type";
 	std::string Error_BrokenFile = "FileError: Stream unexpectedly over.";
-	std::string No_Error = "";
-
+	std::string No_Error = "NoError?";
 	class JSON_error: public JSON_value
 	{
 	public:
-		// enum ERRORTYPE
-		// {
-		// 	ErrorType_Object,		//"TypeError: The object struct is not valid."
-		// 	ErrorType_Array,		//"TypeError: The array struct is not valid."
-		// 	ErrorType_String,		//"TypeError: The string struct is not valid, maybe omit '\"'?"
-		// 	ErrorType_Number,		//"TypeError: The number is not valid, maybe some char in it?"
-		// 	ErrorType_UnknownType,	//"TypeError: Unknown Value Type, please check your spelling."
-			
-		// 	Error_BrokenFile,		//"FileError: Stream unexpectedly over."
-		// 	No_Error,
-		// };
+
 		std::ostream& Print(std::ostream& os) override;
 
-		JSON_error(std::string e = No_Error, int p = 0):JSON_value(Jerror),type(e),position(p)
-		{
-			std::vector<std::string> ErrorList;
-			ErrorList.push_back("TypeError: The object struct is not valid.");
-			ErrorList.push_back("TypeError: The array struct is not valid.");
-			ErrorList.push_back("TypeError: The string struct is not valid, maybe omit '\"'.");
-			ErrorList.push_back("TypeError: The number is not valid, maybe some char in it?");
-			ErrorList.push_back("TypeError: Unknown Value Type, please check your spelling.");
-			
-			ErrorList.push_back("FileError: Stream unexpectedly over.");
-			ErrorList.push_back("NoError: It means no error, but if you see this, sth went wrong!");
-		}
+		JSON_error(std::string e = No_Error, int p = 0):JSON_value(Jerror),errorType(e),position(p)
+		{}
 	private:
-		std::string type;
+		std::string errorType;
 		int position;
 	};
 

@@ -43,13 +43,13 @@
 ### 数据结构
 	class JSON_value						//基类
 
-	class JSON_object: public JSON_value	//object类型数据	通过std::unordered_map<JSON_value>实现
-	class JSON_array: public JSON_value		//array类型数据		通过std::vector<JSON_value>实现
+	class JSON_object: public JSON_value	//object类型数 据通过std::unordered_map<JSON_value>实现
+	class JSON_array: public JSON_value	//array类型数据 通过std::vector<JSON_value>实现
 	class JSON_string: public JSON_value	//string类型数据
 	class JSON_number: public JSON_value	//number类型数据
-	class JSON_bool: public JSON_value		//true,false两个bool型
-	class JSON_null: public JSON_value		//null类型
-	class JSON_error: public JSON_value		//报错类型
+	class JSON_bool: public JSON_value	//true,false两个bool型
+	class JSON_null: public JSON_value	//null类型
+	class JSON_error: public JSON_value	//报错类型
 
 ---
 ## 实现方法
@@ -89,8 +89,8 @@
 	S'-> O|A		//json文件从object或者array开始
 	O -> {ON}
 	A -> [AN]
-	ON-> M,ON|M|ε	//object列表项可以是一个或多个或者空
-	AN-> V,AN|V|ε	//array列表项同理
+	ON-> M,ON|M|ε		//object列表项可以是一个或多个或者空
+	AN-> V,AN|V|ε		//array列表项同理
 	M -> s:V
 	V -> O|A|s|n|b|u
 >其实json格式解析也可以看作一个大的object或者array词法分析
@@ -100,31 +100,77 @@
 
 ---
 ## 接口设计
+### 解析接口&输出接口
+>创建一个JSON_value对象，通过其解析器返回解析出来的JSON树  
+>>（不知道怎么解决把this换成对应value的指针的问题）  
+>>:( 所以禁止实例化JSON_value对象（不知道可不可以通过代码实现限制）
+
+	MyJSON::JSON_value* JSON_value::Parser(std::stringstream&);
+	MyJSON::JSON_value* JSON_value::Parser(std::fstream&);
+
+		using namespace MyJSON;
+		//解析json
+		JSON_value* Myparser;
+		Myparser = Myparser->Parser(yourStream);
+>*每个JSON_\* 都有相应的Parser和Print（JSON_value除外，那个不能print）*  
+
+	virtual std::ostream& JSON_value::Print(std::ostream& os) = 0;
 ### 调用接口
->接口全部封装在***MyJSON类***中，创建MyJSON对象解析json文件
+>**MyJSON Type**  
 
-	MyJSON
-	{
-		string fileName;	//如果需要保存文件的名字日期创作者什么的就再开个struct
-		...
+	enum JSONTYPE{Jerror = -1, Jinitial, Jobject, Jarray,Jstring, Jnumber, Jbool, Jnull};
+>object  
 
-		bool type;			// object:type = 0, array:type=1
-	public：
-		void PrintJson (ostream& os = cout);		//打印json数据，默认cout
-		void PrintJsonMinify (ostream& os = cout);	//最小化打印json数据(无空白)
-		
-		void PrintInfo (ostream& os = cout);		//打印文件信息
-		void PrintAll (ostream& os = cout);			//打印所有信息(json不允许有注释要不就cout算了)
+	JSON_object Myobject
+		Get_type() == Jobject;
+		Get_size()		//number of pairs in the Myobject
+		Myobject[key]
 
-		bool get_type();
-		//根据文件type({}还是[])分别对应不同的索引
-		JSON_value& operator [] (int pos) const;
-		JSON_value& operator [] (const string key_name) const;
-		//看来json_value要重载<<了 :(
+		Insert(key, value);
 
-		//读取接口
-		JSON_value& parser_file (string path);
-		JSON_value& parser_stream (ostream& os);
-		
-		//有其他遗漏的后面再写进来	orz
-	};
+>array  
+
+	JSON_array Myarray
+		Get_type() == Jarray;
+		Get_size()		//number of values in the Myarray;
+		Myarray[index]
+
+		Insert(index, value);		//index in range(0,size + 1)
+
+>string  
+
+	JSON_string Mystring
+		Get_type() == Jstring;
+		Get_value()		//a string in Mystring
+
+		Set_value(std::string);
+
+>number  
+
+	JSON_number Mynumber
+		Get_type() == Jnumber;
+		/*for Get_value()
+			return type is std::variant<int64_t, double, std::string>
+			use auto to get the value
+			if the value is out of range, return type is std::string
+		*/
+		Get_value()
+		Get_value_string()		//return the value with string
+		Get_value_type()		//return the typename of value
+
+		//	it will return false when the string is invalid for number
+		Set_value(std::string)
+
+>bool  
+
+	JSON_bool Mybool
+		Get_type() == Jbool;
+		Get_value()		//you know what it mean
+
+		Set_value(bool)
+
+>null  
+
+	JSON_null Mynull
+		Get_type() == Jnull;
+		//and you can do nothing
