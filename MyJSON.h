@@ -10,7 +10,7 @@
 
 namespace MyJSON
 {
-	/*----------类定义----------*/
+	/*----------JSON类定义----------*/
 	enum JSONTYPE{Jerror = -1, Jinitial, Jobject, Jarray,
 					Jstring, Jnumber, Jbool, Jnull};
 	class JSON_value
@@ -21,9 +21,11 @@ namespace MyJSON
 		JSONTYPE Get_type(){return type;}
 
 		virtual JSON_value* Parser(std::stringstream& ss);
-		JSON_value* Parser(std::fstream& fs);
+		// static JSON_value* Parser(std::)
+		JSON_value* Parser(std::ifstream& fs);
 
-		virtual std::ostream& Print(std::ostream& os) = 0;
+		virtual std::ostream& Print(std::ostream& os){os << "Error\n";return os;}
+
 		JSON_value(JSONTYPE _type = Jinitial):type(_type){}
 		virtual ~JSON_value(){}
 	};
@@ -36,9 +38,9 @@ namespace MyJSON
 		JSON_value* Parser(std::stringstream& ss) override;
 		std::ostream& Print(std::ostream& os) override;
 
-		JSON_value& operator [] (std::string key){return *child[key];}
+		// JSON_value& operator [] (std::string key){return *child[key];}
 		int Get_size(){return child.size();}
-		void Insert(std::string key, JSON_value* value){child[key] = value;}
+		void Insert(std::string key, JSON_value* value){child.insert({key,value});}
 
 		JSON_object():JSON_value(Jobject){}
 		~JSON_object(){}//释放map？
@@ -52,7 +54,7 @@ namespace MyJSON
 		JSON_value* Parser(std::stringstream& ss) override;
 		std::ostream& Print(std::ostream& os) override;
 
-		JSON_value& operator [] (int index){return *child[index];}
+		// JSON_value& operator [] (int index){return *child[index];}
 		int Get_size(){return child.size();}
 		//position in [0~size]
 		void Insert(int pos, JSON_value* n){child.insert(child.begin()+pos, n);}
@@ -123,33 +125,27 @@ namespace MyJSON
 		~JSON_null(){}
 	};
 
-	/*Errors*/
-	// std::string SyntaxError_Object =		"TypeError: The object struct is not valid.";
-	// std::string SyntaxError_Array =		"TypeError: The array struct is not valid.";
-	// std::string SyntaxError_String =		"TypeError: The string struct is not valid, maybe omit '\"'?";
-	// std::string SyntaxError_Number =		"TypeError: The number is not valid, maybe some char in it?";
-	// std::string SyntaxError_UnknownType =	"TypeError: Unknown Value Type, please check your spelling.";
-	// std::string Error_BrokenFile = "FileError: Stream unexpectedly over.";
-	// std::string No_Error = "";
-	std::string SyntaxError_Object = "SyntaxError: object";
-	std::string SyntaxError_Array = "SyntaxError: array";
-	std::string SyntaxError_String = "SyntaxError: string";
-	std::string SyntaxError_Number = "SyntaxError: number";
-	std::string SyntaxError_UnknownType = "TypeError: Unknown Type";
-	std::string Error_BrokenFile = "FileError: Stream unexpectedly over.";
-	std::string No_Error = "NoError?";
+	extern std::string SyntaxError_Object;
+	extern std::string SyntaxError_Array;
+	extern std::string SyntaxError_String;
+	extern std::string SyntaxError_Number;
+	extern std::string SyntaxError_UnknownType;
+	extern std::string Error_BrokenFile;
+	extern std::string No_Error;
 	class JSON_error: public JSON_value
 	{
+		std::string errorType;
+		const int position;
+		std::string Error_Code = "?";
 	public:
 
 		std::ostream& Print(std::ostream& os) override;
 
-		JSON_error(std::string e = No_Error, int p = 0):JSON_value(Jerror),errorType(e),position(p)
-		{}
-	private:
-		std::string errorType;
-		int position;
+		JSON_error(std::stringstream& ss, int p = 0, std::string e = No_Error):JSON_value(Jerror),errorType(e),position(p)
+		{
+			ss.seekg(position);
+			getline(ss, Error_Code);
+		}
 	};
-
-	/*----------类定义----------*/
+	/*----------JSON类定义----------*/
 }
