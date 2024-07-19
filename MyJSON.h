@@ -25,6 +25,7 @@ namespace MyJSON
 		JSON_value* Parser(std::ifstream& fs);
 
 		virtual std::ostream& Print(std::ostream& os){os << "Error\n";return os;}
+
 		JSON_value(JSONTYPE _type = Jinitial):type(_type){}
 		virtual ~JSON_value(){}
 	};
@@ -37,7 +38,7 @@ namespace MyJSON
 		JSON_value* Parser(std::stringstream& ss) override;
 		std::ostream& Print(std::ostream& os) override;
 
-		JSON_value& operator [] (std::string key){return *child[key];}
+		// JSON_value& operator [] (std::string key){return *child[key];}
 		int Get_size(){return child.size();}
 		void Insert(std::string key, JSON_value* value){child.insert({key,value});}
 
@@ -53,7 +54,7 @@ namespace MyJSON
 		JSON_value* Parser(std::stringstream& ss) override;
 		std::ostream& Print(std::ostream& os) override;
 
-		JSON_value& operator [] (int index){return *child[index];}
+		// JSON_value& operator [] (int index){return *child[index];}
 		int Get_size(){return child.size();}
 		//position in [0~size]
 		void Insert(int pos, JSON_value* n){child.insert(child.begin()+pos, n);}
