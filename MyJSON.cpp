@@ -21,43 +21,43 @@ namespace MyJSON
 /*----------类函数----------*/
 /*-----解析函数-----*/
 	/*---JSON_value---*/
-	JSON_value* JSON_value::Parser(std::ifstream& fs)
+	std::shared_ptr<JSON_value> JSON_value::Parser(std::ifstream& fs)
 	{
 		std::stringstream ss;
 		ss << fs.rdbuf();
 		return Parser(ss);
 	}
-	JSON_value* JSON_value::Parser(std::stringstream& ss)
+	std::shared_ptr<JSON_value> JSON_value::Parser(std::stringstream& ss)
 	{
 		//WARNING JSON_value的parser不会变更自身指针，如果在最外层处理的时候记得获取返回值
 		IgnoreBlank(ss);
 		char ch = ss.peek();
 		if(ch == '{'){
-			JSON_object* ret = new JSON_object;
+			std::shared_ptr<JSON_object> ret(new JSON_object);
 			return ret->Parser(ss);
 		}
 		if(ch == '['){
-			JSON_array* ret = new JSON_array;
+			std::shared_ptr<JSON_array> ret(new JSON_array);
 			return ret->Parser(ss);
 		}
 		if(ch == '"'){
-			JSON_string* ret = new JSON_string;
+			std::shared_ptr<JSON_string> ret(new JSON_string);
 			return ret->Parser(ss);
 		}
 		if(ch == '-' || (ch <= '9' && ch >= '0')){
-			JSON_number* ret = new JSON_number;
+			std::shared_ptr<JSON_number> ret(new JSON_number);
 			return ret->Parser(ss);
 		}
 		if(ch == 't' || ch == 'f'){
-			JSON_bool* ret = new JSON_bool;
+			std::shared_ptr<JSON_bool> ret(new JSON_bool);
 			return ret->Parser(ss);
 		}
 		if(ch == 'n'){
-			JSON_null*ret = new JSON_null;
+			std::shared_ptr<JSON_null> ret(new JSON_null);
 			return ret->Parser(ss);
 		}
 		//else
-		return new JSON_error(ss, ss.tellg(), SyntaxError_UnknownType);
+		std::shared_ptr<JSON_null> E(new JSON_error(ss, ss.tellg(), SyntaxError_UnknownType));
 	}
 	/*---JSON_value---*/
 	/*---JSON_object---*/
