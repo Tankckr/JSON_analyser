@@ -33,72 +33,70 @@ namespace MyJSON
 		IgnoreBlank(ss);
 		char ch = ss.peek();
 		if(ch == '{'){
-			std::shared_ptr<JSON_object> ret(new JSON_object);
+			std::shared_ptr<JSON_object> ret = std::make_shared<JSON_object>();
 			return ret->Parser(ss);
 		}
 		if(ch == '['){
-			std::shared_ptr<JSON_array> ret(new JSON_array);
+			std::shared_ptr<JSON_array> ret = std::make_shared<JSON_array>();
 			return ret->Parser(ss);
 		}
 		if(ch == '"'){
-			std::shared_ptr<JSON_string> ret(new JSON_string);
+			std::shared_ptr<JSON_string> ret = std::make_shared<JSON_string>();
 			return ret->Parser(ss);
 		}
 		if(ch == '-' || (ch <= '9' && ch >= '0')){
-			std::shared_ptr<JSON_number> ret(new JSON_number);
+			std::shared_ptr<JSON_number> ret = std::make_shared<JSON_number>();
 			return ret->Parser(ss);
 		}
 		if(ch == 't' || ch == 'f'){
-			std::shared_ptr<JSON_bool> ret(new JSON_bool);
+			std::shared_ptr<JSON_bool> ret = std::make_shared<JSON_bool>();
 			return ret->Parser(ss);
 		}
 		if(ch == 'n'){
-			std::shared_ptr<JSON_null> ret(new JSON_null);
+			std::shared_ptr<JSON_null> ret = std::make_shared<JSON_null>();
 			return ret->Parser(ss);
 		}
 		//else
-		std::shared_ptr<JSON_null> E(new JSON_error(ss, ss.tellg(), SyntaxError_UnknownType));
+		return std::make_shared<JSON_error>(ss, ss.tellg(), SyntaxError_UnknownType);
 	}
 	/*---JSON_value---*/
 	/*---JSON_object---*/
-	JSON_value* JSON_object::Parser(std::stringstream& ss)
+	std::shared_ptr<JSON_value> JSON_object::Parser(std::stringstream& ss)
 	{
 		IgnoreBlank(ss);
 		if (ss.peek() != '{'){
-			return new JSON_error(ss, ss.tellg(), SyntaxError_Object);
+			return std::make_shared<JSON_error>(ss, ss.tellg(), SyntaxError_Object);
 		}ss.ignore();
 		IgnoreBlank(ss);
 		if(ss.peek() == '}'){	//{}
 			ss.ignore();
-			return new JSON_object;
+			return std::make_shared<JSON_object>();
 		}
 		while (ss.peek() != EOF)
 		{
 			/*---"key"---*/
-			JSON_string* parserS = new JSON_string;
+			std::shared_ptr<JSON_string> parserS = std::make_shared<JSON_string>();
 			parserS->Parser(ss);
 			if(parserS->Get_type() == Jerror){
 				return parserS;
 			}
 			std::string key = parserS->Get_value();
-			delete parserS;
 			/*---"key"---*/
 			/*---:---*/
 			IgnoreBlank(ss);
 			if(ss.peek() != ':'){
 				int a = ss.tellg();
-				return new JSON_error(ss, ss.tellg(), SyntaxError_Object);
+				return std::make_shared<JSON_error>(ss, ss.tellg(), SyntaxError_Object);
 			}ss.ignore();
 			/*---:---*/
 			/*---value---*/
-			JSON_value* pV = new JSON_value;
-			JSON_value* parserV = pV->Parser(ss);
-			delete pV;
+			std::shared_ptr<JSON_value> pV = std::make_shared<JSON_value>();
+			pV = pV->Parser(ss);
 			/*---value---*/
-			if(parserV->Get_type() == Jerror){
-				return parserV;
+			if(pV->Get_type() == Jerror){
+				return pV;
 			}
-			Insert(key, parserV);
+			Insert(key, pV);
 			/*---next---*/
 			IgnoreBlank(ss);
 			if(ss.peek() == ','){
@@ -107,36 +105,35 @@ namespace MyJSON
 			}
 			else if(ss.peek() == '}'){
 				ss.ignore();
-				return this;
+				return std::shared_ptr<JSON_object>(this);
 			}
-			else return new JSON_error(ss, ss.tellg(), SyntaxError_Object);
+			else return std::make_shared<JSON_error>(ss, ss.tellg(), SyntaxError_Object);
 			/*---next---*/
 		}//不完整的文件
-		return new JSON_error(ss, ss.tellg(), Error_BrokenFile);
+		return std::make_shared<JSON_error>(ss, ss.tellg(), Error_BrokenFile);
 	}
 	/*---JSON_object---*/
 	/*---JSON_array---*/
-	JSON_value* JSON_array::Parser(std::stringstream& ss)
+	std::shared_ptr<JSON_value> JSON_array::Parser(std::stringstream& ss)
 	{
 		IgnoreBlank(ss);
 		if(ss.peek() != '['){
-			return new JSON_error(ss, ss.tellg(), SyntaxError_Array);
+			return std::make_shared<JSON_error>(ss, ss.tellg(), SyntaxError_Array);
 		}ss.ignore();
 		IgnoreBlank(ss);
 		if(ss.peek() == ']'){
-			return new JSON_array;
+			return std::make_shared<JSON_array>();
 		}
 		while(ss.peek()!=EOF)
 		{
 			/*---value---*/
-			JSON_value* p = new JSON_value;
-			JSON_value* parser = p->Parser(ss);
-			delete p;
+			std::shared_ptr<JSON_value> p = std::make_shared<JSON_value>();
+			p = p->Parser(ss);
 			/*---value---*/
-			if(parser->Get_type() == Jerror){
-				return parser;
+			if(p->Get_type() == Jerror){
+				return p;
 			}
-			Insert(Get_size(), parser);
+			Insert(Get_size(), p);
 			/*---next---*/
 			IgnoreBlank(ss);
 			if(ss.peek() == ','){
@@ -146,16 +143,16 @@ namespace MyJSON
 			else if(ss.peek() == ']')
 			{
 				ss.ignore();
-				return this;
+				return std::shared_ptr<JSON_array>(this);
 			}
-			else return new JSON_error(ss, ss.tellg(), SyntaxError_Array);
+			else return std::make_shared<JSON_error>(ss, ss.tellg(), SyntaxError_Array);
 			/*---next---*/
 		}
-		return new JSON_error(ss, ss.tellg(), Error_BrokenFile);
+		return std::make_shared<JSON_error>(ss, ss.tellg(), Error_BrokenFile);
 	}
 	/*---JSON_array---*/
 	/*---JSON_string---*/
-	JSON_value* JSON_string::Parser(std::stringstream& ss)
+	std::shared_ptr<JSON_value> JSON_string::Parser(std::stringstream& ss)
 	{
 		IgnoreBlank(ss);
 		std::string ms = ss.str().substr(ss.tellg());
@@ -165,13 +162,13 @@ namespace MyJSON
 		{
 			Set_value(match.str());
 			ss.ignore(match.str().size());
-			return this;
+			return std::shared_ptr<JSON_string>(this);
 		}
-		else return new JSON_error(ss, ss.tellg(), SyntaxError_String);
+		else return std::make_shared<JSON_error>(ss, ss.tellg(), SyntaxError_String);
 	}
 	/*---JSON_string---*/
 	/*---JSON_number---*/
-	JSON_value* JSON_number::Parser(std::stringstream& ss)
+	std::shared_ptr<JSON_value> JSON_number::Parser(std::stringstream& ss)
 	{
 		IgnoreBlank(ss);
 		std::string ms = ss.str().substr(ss.tellg());
@@ -180,12 +177,12 @@ namespace MyJSON
 		if(std::regex_search(ms, match, number))
 		{
 			if(!Set_value(match.str())){
-				return new JSON_error(ss, ss.tellg(), SyntaxError_Number);
+				return std::make_shared<JSON_error>(ss, ss.tellg(), SyntaxError_Number);
 			}
 			ss.ignore(match.str().size());
-			return this;
+			return std::shared_ptr<JSON_number>(this);
 		}
-		else return new JSON_error(ss, ss.tellg(), SyntaxError_Number);
+		else return std::make_shared<JSON_error>(ss, ss.tellg(), SyntaxError_Number);
 	}
 
 	bool JSON_number::Set_value(std::string value)
@@ -229,7 +226,7 @@ namespace MyJSON
 	}
 	/*---JSON_number---*/
 	/*---JSON_bool---*/
-	JSON_value* JSON_bool::Parser(std::stringstream& ss)
+	std::shared_ptr<JSON_value> JSON_bool::Parser(std::stringstream& ss)
 	{
 		IgnoreBlank(ss);
 		std::string ms = ss.str().substr(ss.tellg());
@@ -246,12 +243,12 @@ namespace MyJSON
 			value = false;
 			ss.ignore(5);
 		}
-		else return new JSON_error(ss, ss.tellg(), SyntaxError_UnknownType);
-		return this;
+		else return std::make_shared<JSON_error>(ss, ss.tellg(), SyntaxError_UnknownType);
+		return std::shared_ptr<JSON_bool>(this);
 	}
 	/*---JSON_bool---*/
 	/*---JSON_null---*/
-	JSON_value* JSON_null::Parser(std::stringstream& ss)
+	std::shared_ptr<JSON_value> JSON_null::Parser(std::stringstream& ss)
 	{
 		IgnoreBlank(ss);
 		std::string ms = ss.str().substr(ss.tellg());
@@ -260,8 +257,8 @@ namespace MyJSON
 		if (std::regex_search(ms, match, N))
 		{
 			ss.ignore(4);
-			return this;
-		}else return new JSON_error(ss, ss.tellg(), SyntaxError_UnknownType);
+			return std::shared_ptr<JSON_null>(this);
+		}else return std::make_shared<JSON_error>(ss, ss.tellg(), SyntaxError_UnknownType);
 	}
 	/*---JSON_null---*/
 /*-----解析函数-----*/
