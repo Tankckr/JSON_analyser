@@ -7,6 +7,7 @@
 #include<unordered_map>
 #include<vector>
 #include<variant>
+#include<memory>
 
 namespace MyJSON
 {
@@ -20,9 +21,10 @@ namespace MyJSON
 	public:
 		JSONTYPE Get_type(){return type;}
 
-		virtual JSON_value* Parser(std::stringstream& ss);
+		//virtual JSON_value* Parser(std::stringstream& ss);
 		// static JSON_value* Parser(std::)
-		JSON_value* Parser(std::ifstream& fs);
+		std::shared_ptr<JSON_value> Parser(std::ifstream& fs);
+		virtual std::shared_ptr<JSON_value> Parser(std::stringstream& ss);
 
 		virtual std::ostream& Print(std::ostream& os){os << "Error\n";return os;}
 
@@ -32,15 +34,15 @@ namespace MyJSON
 
 	class JSON_object: public JSON_value
 	{
-		std::unordered_map<std::string, JSON_value*> child;
+		std::unordered_map<std::string, std::shared_ptr<JSON_value>> child;
 
 	public:
-		JSON_value* Parser(std::stringstream& ss) override;
+		std::shared_ptr<JSON_value> Parser(std::stringstream& ss) override;
 		std::ostream& Print(std::ostream& os) override;
 
 		// JSON_value& operator [] (std::string key){return *child[key];}
 		int Get_size(){return child.size();}
-		void Insert(std::string key, JSON_value* value){child.insert({key,value});}
+		void Insert(std::string key, std::shared_ptr<JSON_value> value){child.insert({key,value});}
 
 		JSON_object():JSON_value(Jobject){}
 		~JSON_object(){}//释放map？
@@ -48,16 +50,16 @@ namespace MyJSON
 
 	class JSON_array: public JSON_value
 	{
-		std::vector<JSON_value*> child;
+		std::vector<std::shared_ptr<JSON_value>> child;
 
 	public:
-		JSON_value* Parser(std::stringstream& ss) override;
+		std::shared_ptr<JSON_value> Parser(std::stringstream& ss) override;
 		std::ostream& Print(std::ostream& os) override;
 
 		// JSON_value& operator [] (int index){return *child[index];}
 		int Get_size(){return child.size();}
 		//position in [0~size]
-		void Insert(int pos, JSON_value* n){child.insert(child.begin()+pos, n);}
+		void Insert(int pos, std::shared_ptr<JSON_value> value){child.insert(child.begin()+pos, value);}
 
 		JSON_array():JSON_value(Jarray){}
 		~JSON_array(){}//释放vector？
@@ -68,7 +70,7 @@ namespace MyJSON
 		std::string value = "";
 
 	public:
-		JSON_value* Parser(std::stringstream& ss) override;
+		std::shared_ptr<JSON_value> Parser(std::stringstream& ss) override;
 		std::ostream& Print(std::ostream& os) override;
 
 		std::string Get_value(){return value;}
@@ -87,7 +89,7 @@ namespace MyJSON
 		bool valueType = false;	//false: Int, true: double
 		bool outOfRange = false;
 	public:
-		JSON_value* Parser(std::stringstream& ss) override;
+		std::shared_ptr<JSON_value> Parser(std::stringstream& ss) override;
 		std::ostream& Print(std::ostream& os) override;
 
 		std::variant<int64_t, double, std::string> Get_value();
@@ -105,7 +107,7 @@ namespace MyJSON
 		bool value = false;
 
 	public:
-		JSON_value* Parser(std::stringstream& ss) override;
+		std::shared_ptr<JSON_value> Parser(std::stringstream& ss) override;
 		std::ostream& Print(std::ostream& os) override;
 
 		bool Get_value(){return value;}
@@ -118,7 +120,7 @@ namespace MyJSON
 	class JSON_null: public JSON_value
 	{
 	public:
-		JSON_value* Parser(std::stringstream& ss) override;
+		std::shared_ptr<JSON_value> Parser(std::stringstream& ss) override;
 		std::ostream& Print(std::ostream& os) override;
 
 		JSON_null():JSON_value(Jnull){}
