@@ -19,22 +19,17 @@
 
  
 ---
-### 解析接口&输出接口
+## 解析接口&输出接口
 >创建一个JSON_value对象，通过其解析器返回解析出来的JSON树  
->>:( 不知道怎么解决，value的this不能换成对应类型的指针  
->>:( 所以这个内存没有释放也不知道怎么搞
+>>*这个对象不存放解析结果*
 
-	MyJSON::JSON_value* JSON_value::Parser(std::stringstream&);
-	MyJSON::JSON_value* JSON_value::Parser(std::fstream&);
+	std::shared_ptr<MyJSON::JSON_value> JSON_value::Parser(std::stringstream&);
+	std::shared_ptr<MyJSON::JSON_value> JSON_value::Parser(std::fstream&);
 
 		using namespace MyJSON;
 		//解析json
-		JSON_value Myparser;	//just a parser
-		JSON_value* JSON = Myparser->Parser(yourStream);
-		
-		
-		JSON->print(ofile);	//std::ofstream ofile
-		......			//do somthing with JSON such as below
+		JSON_value Myparser
+		std::shared_ptr<JSON_value> JS = MyParser.Parser(yourStream);
 
 >*每个JSON_\* 对象都有相应的Parser和Print（JSON_value除外，那个不能print）*  
 
@@ -48,7 +43,6 @@
 	JSON_object Myobject
 		Get_type() == Jobject;
 		Get_size()		//number of pairs in the Myobject
-		Myobject[key]
 
 		Insert(key, value);
 
@@ -57,7 +51,6 @@
 	JSON_array Myarray
 		Get_type() == Jarray;
 		Get_size()		//number of values in the Myarray;
-		Myarray[index]
 
 		Insert(index, value);		//index in range(0,size + 1)
 

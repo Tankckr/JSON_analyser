@@ -21,8 +21,6 @@ namespace MyJSON
 	public:
 		JSONTYPE Get_type(){return type;}
 
-		//virtual JSON_value* Parser(std::stringstream& ss);
-		// static JSON_value* Parser(std::)
 		std::shared_ptr<JSON_value> Parser(std::ifstream& fs);
 		virtual std::shared_ptr<JSON_value> Parser(std::stringstream& ss);
 
@@ -45,7 +43,7 @@ namespace MyJSON
 		void Insert(std::string key, std::shared_ptr<JSON_value> value){child.insert({key,value});}
 
 		JSON_object():JSON_value(Jobject){}
-		~JSON_object(){}//释放map？
+		~JSON_object(){}
 	};
 
 	class JSON_array: public JSON_value
@@ -62,7 +60,7 @@ namespace MyJSON
 		void Insert(int pos, std::shared_ptr<JSON_value> value){child.insert(child.begin()+pos, value);}
 
 		JSON_array():JSON_value(Jarray){}
-		~JSON_array(){}//释放vector？
+		~JSON_array(){}
 	};
 
 	class JSON_string: public JSON_value

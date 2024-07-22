@@ -72,11 +72,13 @@ namespace MyJSON
 			ss.ignore();
 			return std::make_shared<JSON_object>();
 		}
+
+		std::shared_ptr<JSON_object> ret(new JSON_object);
 		while (ss.peek() != EOF)
 		{
 			/*---"key"---*/
 			std::shared_ptr<JSON_string> parserS = std::make_shared<JSON_string>();
-			parserS->Parser(ss);
+			parserS->Parser(ss);//这里使得JSON_string需要给this也set_value
 			if(parserS->Get_type() == Jerror){
 				return parserS;
 			}
@@ -96,7 +98,7 @@ namespace MyJSON
 			if(pV->Get_type() == Jerror){
 				return pV;
 			}
-			Insert(key, pV);
+			ret->Insert(key, pV);
 			/*---next---*/
 			IgnoreBlank(ss);
 			if(ss.peek() == ','){
@@ -105,7 +107,7 @@ namespace MyJSON
 			}
 			else if(ss.peek() == '}'){
 				ss.ignore();
-				return std::shared_ptr<JSON_object>(this);
+				return ret;
 			}
 			else return std::make_shared<JSON_error>(ss, ss.tellg(), SyntaxError_Object);
 			/*---next---*/
@@ -124,6 +126,8 @@ namespace MyJSON
 		if(ss.peek() == ']'){
 			return std::make_shared<JSON_array>();
 		}
+
+		std::shared_ptr<JSON_array> ret(new JSON_array);
 		while(ss.peek()!=EOF)
 		{
 			/*---value---*/
@@ -133,7 +137,7 @@ namespace MyJSON
 			if(p->Get_type() == Jerror){
 				return p;
 			}
-			Insert(Get_size(), p);
+			ret->Insert(Get_size(), p);
 			/*---next---*/
 			IgnoreBlank(ss);
 			if(ss.peek() == ','){
@@ -143,7 +147,7 @@ namespace MyJSON
 			else if(ss.peek() == ']')
 			{
 				ss.ignore();
-				return std::shared_ptr<JSON_array>(this);
+				return ret;
 			}
 			else return std::make_shared<JSON_error>(ss, ss.tellg(), SyntaxError_Array);
 			/*---next---*/
@@ -160,9 +164,11 @@ namespace MyJSON
 		std::regex pattern("^\"[^\"]*\"");
 		if(std::regex_search(ms, match, pattern))
 		{
-			Set_value(match.str());
+			std::shared_ptr<JSON_string> ret = std::make_shared<JSON_string>();
+			ret->Set_value(match.str());
+			Set_value(match.str());//给object解析用
 			ss.ignore(match.str().size());
-			return std::shared_ptr<JSON_string>(this);
+			return ret;
 		}
 		else return std::make_shared<JSON_error>(ss, ss.tellg(), SyntaxError_String);
 	}
@@ -176,11 +182,12 @@ namespace MyJSON
 		std::regex number("^-?([0]|[1-9][0-9]*)(\\.[0-9]{1,})?([e|E][+|-]?[1-9][0-9]*)?");
 		if(std::regex_search(ms, match, number))
 		{
-			if(!Set_value(match.str())){
+			std::shared_ptr<JSON_number> ret = std::make_shared<JSON_number>();
+			if(!ret->Set_value(match.str())){
 				return std::make_shared<JSON_error>(ss, ss.tellg(), SyntaxError_Number);
 			}
 			ss.ignore(match.str().size());
-			return std::shared_ptr<JSON_number>(this);
+			return ret;
 		}
 		else return std::make_shared<JSON_error>(ss, ss.tellg(), SyntaxError_Number);
 	}
@@ -233,18 +240,19 @@ namespace MyJSON
 		std::smatch match;
 		std::regex T("^(true)");
 		std::regex F("^(false)");
+		std::shared_ptr<JSON_bool> ret = std::make_shared<JSON_bool>();
 		if (std::regex_search(ms, match, T))
 		{
-			value = true;
+			ret->Set_value(true);
 			ss.ignore(4);
 		}
 		else if (std::regex_search(ms, match, F))
 		{
-			value = false;
+			ret->Set_value(false);
 			ss.ignore(5);
 		}
 		else return std::make_shared<JSON_error>(ss, ss.tellg(), SyntaxError_UnknownType);
-		return std::shared_ptr<JSON_bool>(this);
+		return ret;
 	}
 	/*---JSON_bool---*/
 	/*---JSON_null---*/
@@ -256,8 +264,9 @@ namespace MyJSON
 		std::regex N("^(null)");
 		if (std::regex_search(ms, match, N))
 		{
+			std::shared_ptr<JSON_null> ret = std::make_shared<JSON_null>();
 			ss.ignore(4);
-			return std::shared_ptr<JSON_null>(this);
+			return ret;
 		}else return std::make_shared<JSON_error>(ss, ss.tellg(), SyntaxError_UnknownType);
 	}
 	/*---JSON_null---*/
@@ -265,7 +274,7 @@ namespace MyJSON
 /*-----打印函数-----*/
 	//全局缩进
 	int tab_deep = 0;
-	std::ostream& operator<< (std::ostream& os, JSON_value* v)
+	std::ostream& operator<< (std::ostream& os, std::shared_ptr<JSON_value>& v)
 	{
 		if(v->Get_type() != Jinitial){
 			return v->Print(os);
