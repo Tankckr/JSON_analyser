@@ -21,7 +21,7 @@ namespace MyJSON
 		while (ss.peek() != EOF) {
 			/*---"key"---*/
 			std::shared_ptr<JSON_String> pS = std::make_shared<JSON_String>();
-			pS->parser(ss);//这里使得JSON_string需要给this也set_value
+			pS = pS->parser(ss)->get_str();
 			if (pS->get_type() == JERROR) {
 				return pS;
 			}
@@ -41,7 +41,7 @@ namespace MyJSON
 			if (pV->get_type() == JERROR) {
 				return pV;
 			}
-			ret->insert(key, pV);
+			ret->parser_insert(key, pV);
 			/*---next---*/
 			ignore_blank(ss);
 			if (ss.peek() == ',') {

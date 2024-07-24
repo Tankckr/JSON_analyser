@@ -6,7 +6,7 @@ namespace MyJSON
 	std::shared_ptr<JSON_Object> JSON_Value::get_obj()
 	{
 		if (type_ != JOBJECT) {
-			std::cerr << "your type:" << type_ << '\n';
+			std::cerr << "\niwanna JOBJECT, your type:" << type_string(type_) << '\n';
 			throw "type Error!";
 		}
 		return std::dynamic_pointer_cast<JSON_Object>(shared_from_this());
@@ -14,7 +14,7 @@ namespace MyJSON
 	std::shared_ptr<JSON_Array> JSON_Value::get_arr()
 	{
 		if (type_ != JARRAY) {
-			std::cerr << "your type:" << type_ << '\n';
+			std::cerr << "\niwanna JARRAY, your type:" << type_string(type_) << '\n';
 			throw "type Error!";
 		}
 		return std::dynamic_pointer_cast<JSON_Array>(shared_from_this());
@@ -22,7 +22,7 @@ namespace MyJSON
 	std::shared_ptr<JSON_String> JSON_Value::get_str()
 	{
 		if (type_ != JSTRING) {
-			std::cerr << "your type:" << type_ << '\n';
+			std::cerr << "\niwanna JSTRING, your type:" << type_string(type_) << '\n';
 			throw "type Error!";
 		}
 		return std::dynamic_pointer_cast<JSON_String>(shared_from_this());
@@ -30,7 +30,7 @@ namespace MyJSON
 	std::shared_ptr<JSON_Number> JSON_Value::get_num()
 	{
 		if (type_ != JNUMBER) {
-			std::cerr << "your type:" << type_ << '\n';
+			std::cerr << "\niwanna JNUMBER, your type:" << type_string(type_) << '\n';
 			throw "type Error!";
 		}
 		return std::dynamic_pointer_cast<JSON_Number>(shared_from_this());
@@ -38,7 +38,7 @@ namespace MyJSON
 	std::shared_ptr<JSON_Bool> JSON_Value::get_boo()
 	{
 		if (type_ != JBOOL) {
-			std::cerr << "your type:" << type_ << '\n';
+			std::cerr << "\niwanna JBOOL, your type:" << type_string(type_) << '\n';
 			throw "type Error!";
 		}
 		return std::dynamic_pointer_cast<JSON_Bool>(shared_from_this());
@@ -46,7 +46,7 @@ namespace MyJSON
 	std::shared_ptr<JSON_NULL> JSON_Value::get_nul()
 	{
 		if (type_ != JNULL) {
-			std::cerr << "your type:" << type_ << '\n';
+			std::cerr << "\niwanna JNULL, your type:" << type_string(type_) << '\n';
 			throw "type Error!";
 		}
 		return std::dynamic_pointer_cast<JSON_NULL>(shared_from_this());
@@ -59,9 +59,11 @@ namespace MyJSON
 		ss << fs.rdbuf();
 		return parser(ss);
 	}
+	/// @brief JSON_value的parser不会变更自身指针，如果在最外层处理的时候记得获取返回值
+	/// @param std::stringstream& ss
+	/// @return std::shared_ptr<JSON_Value>
 	std::shared_ptr<JSON_Value> JSON_Value::parser(std::stringstream& ss)
 	{
-		//WARNING JSON_value的parser不会变更自身指针，如果在最外层处理的时候记得获取返回值
 		ignore_blank(ss);
 		char ch = ss.peek();
 		if (ch == '{') {

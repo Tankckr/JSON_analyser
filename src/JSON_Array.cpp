@@ -24,7 +24,8 @@ namespace MyJSON
 			if (p->get_type() == JERROR) {
 				return p;
 			}
-			ret->insert(get_size(), p);
+			// ret->insert(get_size(), p);
+			ret->child_.push_back(p);
 			/*---next---*/
 			ignore_blank(ss);
 			if (ss.peek() == ',') {

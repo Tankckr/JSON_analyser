@@ -23,7 +23,30 @@ namespace MyJSON
 			return os;
 		}
 	}
-	
+	std::string type_string(JSON_Type& t)
+	{
+		switch (t) {
+		case JERROR:
+			return "JERROR";
+		case JINITIAL:
+			return "JINITIAL";
+		case JOBJECT:
+			return "JOBJECT";
+		case JARRAY:
+			return "JARRAY";
+		case JSTRING:
+			return "JSTRING";
+		case JNUMBER:
+			return "JNUMBER";
+		case JBOOL:
+			return "JBOOL";
+		case JNULL:
+			return "JNULL";
+		default:
+			return "UNKNOWN";
+		}
+	}
+
 	/*----------报错类型定义----------*/
 	std::string syntax_error_object = "TypeError: The object struct is not valid.";
 	std::string syntax_error_array = "TypeError: The array struct is not valid.";

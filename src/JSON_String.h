@@ -6,7 +6,12 @@ namespace MyJSON
 	class JSON_String: public JSON_Value
 	{
 		std::string value_ = "";
-
+		/// @brief 在解析器中调用的设置值（json格式的string带""，为了方便使用，set不用加\"）
+		/// @param string _v 
+		void parser_set_value(std::string _v)
+		{
+			value_ = _v;
+		}
 	public:
 		std::shared_ptr<JSON_Value> parser(std::stringstream& ss) override;
 		std::ostream& print(std::ostream& os) override;
@@ -17,7 +22,7 @@ namespace MyJSON
 		}
 		void set_value(std::string _v)
 		{
-			value_ = _v;
+			value_ = '"' + _v + '"';
 		}
 
 		JSON_String():JSON_Value(JSTRING) {}

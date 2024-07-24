@@ -14,8 +14,7 @@ namespace MyJSON
 		std::regex pattern("^\"[^\"]*\"");
 		if (std::regex_search(ms, match, pattern)) {
 			std::shared_ptr<JSON_String> ret = std::make_shared<JSON_String>();
-			ret->set_value(match.str());
-			set_value(match.str());//给object解析用
+			ret->parser_set_value(match.str());
 			ss.ignore(match.str().size());
 			return ret;
 		} else return std::make_shared<JSON_Error>(ss, ss.tellg(), syntax_error_string);

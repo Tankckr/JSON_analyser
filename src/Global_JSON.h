@@ -44,6 +44,7 @@ namespace MyJSON
 	/*----------非成员函数声明----------*/
 	void ignore_blank(std::stringstream& ss);
 	std::ostream& operator<< (std::ostream& os, std::shared_ptr<JSON_Value>& v);
+	std::string type_string(JSON_Type& t);
 	/*----------全局变量声明----------*/
 	extern int tab_deep;
 	extern int error_line;
