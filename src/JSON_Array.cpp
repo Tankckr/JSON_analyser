@@ -8,10 +8,13 @@ namespace MyJSON
 	{
 		ignore_blank(ss);
 		if (ss.peek() != '[') {
-			return std::make_shared<JSON_Error>(ss, ss.tellg(), syntax_error_array);
+			return std::make_shared<JSON_Error>(ss,
+												ss.tellg(),
+												syntax_error_array);
 		}ss.ignore();
 		ignore_blank(ss);
 		if (ss.peek() == ']') {
+			ss.ignore();
 			return std::make_shared<JSON_Array>();
 		}
 
@@ -34,7 +37,9 @@ namespace MyJSON
 			} else if (ss.peek() == ']') {
 				ss.ignore();
 				return ret;
-			} else return std::make_shared<JSON_Error>(ss, ss.tellg(), syntax_error_array);
+			} else return std::make_shared<JSON_Error>(ss,
+													   ss.tellg(),
+													   syntax_error_array);
 			/*---next---*/
 		}
 		return std::make_shared<JSON_Error>(ss, ss.tellg(), error_broken_file);

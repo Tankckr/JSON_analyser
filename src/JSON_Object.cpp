@@ -9,7 +9,9 @@ namespace MyJSON
 	{
 		ignore_blank(ss);
 		if (ss.peek() != '{') {
-			return std::make_shared<JSON_Error>(ss, ss.tellg(), syntax_error_object);
+			return std::make_shared<JSON_Error>(ss,
+												ss.tellg(),
+												syntax_error_object);
 		}ss.ignore();
 		ignore_blank(ss);
 		if (ss.peek() == '}') {	//{}
@@ -30,8 +32,9 @@ namespace MyJSON
 			/*---:---*/
 			ignore_blank(ss);
 			if (ss.peek() != ':') {
-				int a = ss.tellg();
-				return std::make_shared<JSON_Error>(ss, ss.tellg(), syntax_error_object);
+				return std::make_shared<JSON_Error>(ss,
+													ss.tellg(),
+													syntax_error_object);
 			}ss.ignore();
 			/*---:---*/
 			/*---value---*/
@@ -50,7 +53,9 @@ namespace MyJSON
 			} else if (ss.peek() == '}') {
 				ss.ignore();
 				return ret;
-			} else return std::make_shared<JSON_Error>(ss, ss.tellg(), syntax_error_object);
+			} else return std::make_shared<JSON_Error>(ss,
+													   ss.tellg(),
+													   syntax_error_object);
 			/*---next---*/
 		}//不完整的文件
 		return std::make_shared<JSON_Error>(ss, ss.tellg(), error_broken_file);

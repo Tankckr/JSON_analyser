@@ -15,7 +15,9 @@ namespace MyJSON
 			std::shared_ptr<JSON_NULL> ret = std::make_shared<JSON_NULL>();
 			ss.ignore(4);
 			return ret;
-		} else return std::make_shared<JSON_Error>(ss, ss.tellg(), syntax_error_unknown_type);
+		} else return std::make_shared<JSON_Error>(ss,
+												   ss.tellg(),
+												   syntax_error_unknown_type);
 	}
 	/*----------print----------*/
 	std::ostream& JSON_NULL::print(std::ostream& os)

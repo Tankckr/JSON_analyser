@@ -17,7 +17,9 @@ namespace MyJSON
 			ret->parser_set_value(match.str());
 			ss.ignore(match.str().size());
 			return ret;
-		} else return std::make_shared<JSON_Error>(ss, ss.tellg(), syntax_error_string);
+		} else return std::make_shared<JSON_Error>(ss,
+												   ss.tellg(),
+												   syntax_error_string);
 	}
 	/*----------print----------*/
 	std::ostream& JSON_String::print(std::ostream& os)

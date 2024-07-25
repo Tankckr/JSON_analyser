@@ -17,7 +17,9 @@ namespace MyJSON
 
 		std::string get_value_type()
 		{
-			return out_of_range_ ? "string" : (value_type_ ? "double" : "int64");
+			return out_of_range_ ? "string"
+				   : value_type_ ? "double"
+				   : "int64";
 		}
 		std::string get_value_string()
 		{
