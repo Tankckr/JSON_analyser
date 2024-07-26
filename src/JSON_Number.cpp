@@ -18,7 +18,8 @@ namespace MyJSON
 	bool JSON_Number::set_value(std::string value)
 	{
 		std::smatch match;
-		std::regex number("^-?([0]|[1-9][0-9]*)(\\.[0-9]{1,})?([e|E][+|-]?[1-9][0-9]*)?");
+		std::regex number(
+			"^-?([0]|[1-9][0-9]*)(\\.[0-9]{1,})?([e|E][+|-]?[1-9][0-9]*)?");
 		if (std::regex_match(value, match, number)) {
 			std::string value = match.str();
 		} else {
@@ -59,15 +60,20 @@ namespace MyJSON
 		ignore_blank(ss);
 		std::string ms = ss.str().substr(ss.tellg());
 		std::smatch match;
-		std::regex number("^-?([0]|[1-9][0-9]*)(\\.[0-9]{1,})?([e|E][+|-]?[1-9][0-9]*)?");
+		std::regex number(
+			"^-?([0]|[1-9][0-9]*)(\\.[0-9]{1,})?([e|E][+|-]?[1-9][0-9]*)?");
 		if (std::regex_search(ms, match, number)) {
 			std::shared_ptr<JSON_Number> ret = std::make_shared<JSON_Number>();
 			if (!ret->set_value(match.str())) {
-				return std::make_shared<JSON_Error>(ss, ss.tellg(), syntax_error_number);
+				return std::make_shared<JSON_Error>(ss,
+													ss.tellg(),
+													syntax_error_number);
 			}
 			ss.ignore(match.str().size());
 			return ret;
-		} else return std::make_shared<JSON_Error>(ss, ss.tellg(), syntax_error_number);
+		} else return std::make_shared<JSON_Error>(ss,
+												   ss.tellg(),
+												   syntax_error_number);
 	}
 	/*----------print----------*/
 	std::ostream& JSON_Number::print(std::ostream& os)

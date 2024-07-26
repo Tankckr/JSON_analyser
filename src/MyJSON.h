@@ -7,3 +7,4 @@
 #include"JSON_Bool.h"
 #include"JSON_NULL.h"
 #include"JSON_Error.h"
+#include"SAJ.h"

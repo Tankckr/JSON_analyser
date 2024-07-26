@@ -1,5 +1,6 @@
 #pragma once
 #include"JSON_Value.h"
+#include"JSON_Error.h"
 
 namespace MyJSON
 {

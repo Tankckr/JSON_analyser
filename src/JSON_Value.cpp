@@ -6,7 +6,8 @@ namespace MyJSON
 	std::shared_ptr<JSON_Object> JSON_Value::get_obj()
 	{
 		if (type_ != JOBJECT) {
-			std::cerr << "\niwanna JOBJECT, your type:" << type_string(type_) << '\n';
+			std::cerr << "\niwanna JOBJECT, your type:"
+					  << type_string(type_) << '\n';
 			throw "type Error!";
 		}
 		return std::dynamic_pointer_cast<JSON_Object>(shared_from_this());
@@ -14,7 +15,8 @@ namespace MyJSON
 	std::shared_ptr<JSON_Array> JSON_Value::get_arr()
 	{
 		if (type_ != JARRAY) {
-			std::cerr << "\niwanna JARRAY, your type:" << type_string(type_) << '\n';
+			std::cerr << "\niwanna JARRAY, your type:"
+					  << type_string(type_) << '\n';
 			throw "type Error!";
 		}
 		return std::dynamic_pointer_cast<JSON_Array>(shared_from_this());
@@ -22,7 +24,8 @@ namespace MyJSON
 	std::shared_ptr<JSON_String> JSON_Value::get_str()
 	{
 		if (type_ != JSTRING) {
-			std::cerr << "\niwanna JSTRING, your type:" << type_string(type_) << '\n';
+			std::cerr << "\niwanna JSTRING, your type:"
+					  << type_string(type_) << '\n';
 			throw "type Error!";
 		}
 		return std::dynamic_pointer_cast<JSON_String>(shared_from_this());
@@ -30,7 +33,8 @@ namespace MyJSON
 	std::shared_ptr<JSON_Number> JSON_Value::get_num()
 	{
 		if (type_ != JNUMBER) {
-			std::cerr << "\niwanna JNUMBER, your type:" << type_string(type_) << '\n';
+			std::cerr << "\niwanna JNUMBER, your type:"
+					  << type_string(type_) << '\n';
 			throw "type Error!";
 		}
 		return std::dynamic_pointer_cast<JSON_Number>(shared_from_this());
@@ -38,7 +42,8 @@ namespace MyJSON
 	std::shared_ptr<JSON_Bool> JSON_Value::get_boo()
 	{
 		if (type_ != JBOOL) {
-			std::cerr << "\niwanna JBOOL, your type:" << type_string(type_) << '\n';
+			std::cerr << "\niwanna JBOOL, your type:"
+					  << type_string(type_) << '\n';
 			throw "type Error!";
 		}
 		return std::dynamic_pointer_cast<JSON_Bool>(shared_from_this());
@@ -46,7 +51,8 @@ namespace MyJSON
 	std::shared_ptr<JSON_NULL> JSON_Value::get_nul()
 	{
 		if (type_ != JNULL) {
-			std::cerr << "\niwanna JNULL, your type:" << type_string(type_) << '\n';
+			std::cerr << "\niwanna JNULL, your type:"
+					  << type_string(type_) << '\n';
 			throw "type Error!";
 		}
 		return std::dynamic_pointer_cast<JSON_NULL>(shared_from_this());
@@ -91,7 +97,9 @@ namespace MyJSON
 			return ret->parser(ss);
 		}
 		//else
-		return std::make_shared<JSON_Error>(ss, ss.tellg(), syntax_error_unknown_type);
+		return std::make_shared<JSON_Error>(ss,
+											ss.tellg(),
+											syntax_error_unknown_type);
 	}
 	/*----------print----------*/
 	std::ostream& JSON_Value::print(std::ostream& os)
