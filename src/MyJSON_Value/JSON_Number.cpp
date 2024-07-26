@@ -71,9 +71,11 @@ namespace MyJSON
 			}
 			ss.ignore(match.str().size());
 			return ret;
-		} else return std::make_shared<JSON_Error>(ss,
-												   ss.tellg(),
-												   syntax_error_number);
+		} else {
+			return std::make_shared<JSON_Error>(ss,
+												ss.tellg(),
+												syntax_error_number);
+		}
 	}
 	/*----------print----------*/
 	std::ostream& JSON_Number::print(std::ostream& os)

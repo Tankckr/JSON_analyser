@@ -2,7 +2,7 @@
 #include<iostream>
 #include<sstream>
 #include<stdint.h>
-namespace MyJSON
+namespace SAJ
 {
 	//处理器
 	class SAJ_Processor
@@ -29,6 +29,9 @@ namespace MyJSON
 	//解析器
 	class SAJ_Parser
 	{
+		static int error_line;
+		static void ignore_blank(std::stringstream& ss);
+		
 		static bool SAJ_value(std::stringstream&, SAJ_Processor&);
 		static bool SAJ_object(std::stringstream&, SAJ_Processor&);
 		static bool SAJ_array(std::stringstream&, SAJ_Processor&);
@@ -39,5 +42,7 @@ namespace MyJSON
 
 		friend void parse_to_SAJ(std::stringstream&, SAJ_Processor&);
 	};
+	//可以把这个类参数弄成一个模板，静态在执行效率上面会有些许优势
 	void parse_to_SAJ(std::stringstream&, SAJ_Processor&);
+
 }

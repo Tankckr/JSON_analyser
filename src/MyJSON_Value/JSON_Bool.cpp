@@ -20,9 +20,11 @@ namespace MyJSON
 		} else if (std::regex_search(ms, match, F)) {
 			ret->set_value(false);
 			ss.ignore(5);
-		} else return std::make_shared<JSON_Error>(ss,
-												   ss.tellg(),
-												   syntax_error_unknown_type);
+		} else {
+			return std::make_shared<JSON_Error>(ss,
+												ss.tellg(),
+												syntax_error_unknown_type);
+		}
 		return ret;
 	}
 	/*----------print----------*/
