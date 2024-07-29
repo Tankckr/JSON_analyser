@@ -1,0 +1,3 @@
+/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/test/CMakeFiles/rebuild_cache.dir
+/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/test/CMakeFiles/edit_cache.dir
+/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/test/CMakeFiles/SAJTests.dir
