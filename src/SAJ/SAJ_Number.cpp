@@ -13,6 +13,8 @@ namespace SAJ
 		if (std::regex_search(ms, match, number)) {
 			bool value_type = false;
 			std::string value = match.str();
+			ss.ignore(match.str().size());
+			// figure int or double
 			for (int i = 0; i < value.size(); i++) {
 				if (value[i] == '.' || value[i] == 'e' || value[i] == 'E') {
 				value_type = true;

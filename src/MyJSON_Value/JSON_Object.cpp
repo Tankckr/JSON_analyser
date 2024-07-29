@@ -5,7 +5,9 @@
 namespace MyJSON
 {
 	/*----------parser----------*/
-	std::shared_ptr<JSON_Value> JSON_Object::parser(std::stringstream& ss)
+	std::shared_ptr<JSON_Value> JSON_Object::parser(
+			std::stringstream& ss,
+			std::shared_ptr<JSON_Value> fa)
 	{
 		ignore_blank(ss);
 		if (ss.peek() != '{') {
@@ -14,16 +16,18 @@ namespace MyJSON
 												syntax_error_object);
 		}ss.ignore();
 		ignore_blank(ss);
+
+		std::shared_ptr<JSON_Object> ret = std::make_shared<JSON_Object>();
+		ret->set_father(fa);
 		if (ss.peek() == '}') {	//{}
 			ss.ignore();
-			return std::make_shared<JSON_Object>();
+			return ret;
 		}
 
-		std::shared_ptr<JSON_Object> ret(new JSON_Object);
 		while (ss.peek() != EOF) {
 			/*---"key"---*/
 			std::shared_ptr<JSON_String> pS = std::make_shared<JSON_String>();
-			pS = pS->parser(ss)->get_str();
+			pS = pS->parser(ss, fa)->get_str();	//pS will be destroy
 			if (pS->get_type() == JERROR) {
 				return pS;
 			}
@@ -39,7 +43,7 @@ namespace MyJSON
 			/*---:---*/
 			/*---value---*/
 			std::shared_ptr<JSON_Value> pV = std::make_shared<JSON_Value>();
-			pV = pV->parser(ss);
+			pV = pV->parser(ss, ret);
 			/*---value---*/
 			if (pV->get_type() == JERROR) {
 				return pV;

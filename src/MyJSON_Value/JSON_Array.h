@@ -8,7 +8,9 @@ namespace MyJSON
 		std::vector<std::shared_ptr<JSON_Value>> child_;
 
 	public:
-		std::shared_ptr<JSON_Value> parser(std::stringstream& ss) override;
+		std::shared_ptr<JSON_Value> parser(
+			std::stringstream& ss,
+			std::shared_ptr<JSON_Value> fa) override;
 		std::ostream& print(std::ostream& os) override;
 
 		std::shared_ptr<JSON_Value> operator [] (int index)
@@ -22,6 +24,7 @@ namespace MyJSON
 		///position in [0~size]
 		void insert(int pos, std::shared_ptr<JSON_Value> value)
 		{
+			value->set_father(shared_from_this());
 			child_.insert(child_.begin() + pos, value);
 		}
 

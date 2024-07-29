@@ -6,7 +6,9 @@
 namespace MyJSON
 {
 	/*----------parser----------*/
-	std::shared_ptr<JSON_Value> JSON_Bool::parser(std::stringstream& ss)
+	std::shared_ptr<JSON_Value> JSON_Bool::parser(
+			std::stringstream& ss,
+			std::shared_ptr<JSON_Value> fa)
 	{
 		ignore_blank(ss);
 		std::string ms = ss.str().substr(ss.tellg());
@@ -14,6 +16,7 @@ namespace MyJSON
 		std::regex T("^(true)");
 		std::regex F("^(false)");
 		std::shared_ptr<JSON_Bool> ret = std::make_shared<JSON_Bool>();
+		ret->set_father(fa);
 		if (std::regex_search(ms, match, T)) {
 			ret->set_value(true);
 			ss.ignore(4);

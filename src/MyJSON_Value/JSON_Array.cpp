@@ -4,7 +4,9 @@
 namespace MyJSON
 {
 	/*----------parser----------*/
-	std::shared_ptr<JSON_Value> JSON_Array::parser(std::stringstream& ss)
+	std::shared_ptr<JSON_Value> JSON_Array::parser(
+			std::stringstream& ss,
+			std::shared_ptr<JSON_Value> fa)
 	{
 		ignore_blank(ss);
 		if (ss.peek() != '[') {
@@ -12,17 +14,19 @@ namespace MyJSON
 												ss.tellg(),
 												syntax_error_array);
 		}ss.ignore();
+
+		std::shared_ptr<JSON_Array> ret = std::make_shared<JSON_Array>();
+		ret->set_father(fa);
 		ignore_blank(ss);
 		if (ss.peek() == ']') {
 			ss.ignore();
-			return std::make_shared<JSON_Array>();
+			return ret;
 		}
 
-		std::shared_ptr<JSON_Array> ret(new JSON_Array);
 		while (ss.peek() != EOF) {
 			/*---value---*/
 			std::shared_ptr<JSON_Value> p = std::make_shared<JSON_Value>();
-			p = p->parser(ss);
+			p = p->parser(ss, ret);
 			/*---value---*/
 			if (p->get_type() == JERROR) {
 				return p;

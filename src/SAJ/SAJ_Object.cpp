@@ -19,6 +19,7 @@ namespace SAJ
 			return true;
 		}
 		while (ss.peek() != EOF) {
+			ignore_blank(ss);
 			/*---key---*/
 			std::string ms = ss.str().substr(ss.tellg());
 			std::smatch match;
@@ -26,7 +27,6 @@ namespace SAJ
 			if (std::regex_search(ms, match, pattern)) {
 				p.object_key(match.str());
 				ss.ignore(match.str().size());
-				return true;
 			} else {
 				std::string error_code;
 				getline(ss, error_code);
@@ -34,7 +34,7 @@ namespace SAJ
 				return false;
 			}
 			/*---:---*/
-			ignore_blank(ss);
+			ignore_blank(ss);std::cout << "iwanna :\n";
 			if (ss.peek() != ':') {
 				p.error(error_line,
 						"_"+ss.peek(),
@@ -42,6 +42,7 @@ namespace SAJ
 				return false;
 			}ss.ignore();
 			/*---value---*/
+			ignore_blank(ss);
 			if (!SAJ_value(ss, p)) {
 				return false;
 			}

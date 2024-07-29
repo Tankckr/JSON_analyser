@@ -55,7 +55,9 @@ namespace MyJSON
 		return true;
 	}
 	/*----------parser----------*/
-	std::shared_ptr<JSON_Value> JSON_Number::parser(std::stringstream& ss)
+	std::shared_ptr<JSON_Value> JSON_Number::parser(
+			std::stringstream& ss,
+			std::shared_ptr<JSON_Value> fa)
 	{
 		ignore_blank(ss);
 		std::string ms = ss.str().substr(ss.tellg());
@@ -64,6 +66,7 @@ namespace MyJSON
 			"^-?([0]|[1-9][0-9]*)(\\.[0-9]{1,})?([e|E][+|-]?[1-9][0-9]*)?");
 		if (std::regex_search(ms, match, number)) {
 			std::shared_ptr<JSON_Number> ret = std::make_shared<JSON_Number>();
+			ret->set_father(fa);
 			if (!ret->set_value(match.str())) {
 				return std::make_shared<JSON_Error>(ss,
 													ss.tellg(),

@@ -1,4 +1,4 @@
-#include"MyJSON.h"
+#include"../MyJSON.h"
 
 namespace MyJSON
 {
@@ -68,33 +68,35 @@ namespace MyJSON
 	/// @brief JSON_value的parser不会变更自身指针，如果在最外层处理的时候记得获取返回值
 	/// @param std::stringstream& ss
 	/// @return std::shared_ptr<JSON_Value>
-	std::shared_ptr<JSON_Value> JSON_Value::parser(std::stringstream& ss)
+	std::shared_ptr<JSON_Value> JSON_Value::parser(
+			std::stringstream& ss,
+			std::shared_ptr<JSON_Value> fa)
 	{
 		ignore_blank(ss);
 		char ch = ss.peek();
 		if (ch == '{') {
 			std::shared_ptr<JSON_Object> ret = std::make_shared<JSON_Object>();
-			return ret->parser(ss);
+			return ret->parser(ss, fa);
 		}
 		if (ch == '[') {
 			std::shared_ptr<JSON_Array> ret = std::make_shared<JSON_Array>();
-			return ret->parser(ss);
+			return ret->parser(ss, fa);
 		}
 		if (ch == '"') {
 			std::shared_ptr<JSON_String> ret = std::make_shared<JSON_String>();
-			return ret->parser(ss);
+			return ret->parser(ss, fa);
 		}
 		if (ch == '-' || (ch <= '9' && ch >= '0')) {
 			std::shared_ptr<JSON_Number> ret = std::make_shared<JSON_Number>();
-			return ret->parser(ss);
+			return ret->parser(ss, fa);
 		}
 		if (ch == 't' || ch == 'f') {
 			std::shared_ptr<JSON_Bool> ret = std::make_shared<JSON_Bool>();
-			return ret->parser(ss);
+			return ret->parser(ss, fa);
 		}
 		if (ch == 'n') {
 			std::shared_ptr<JSON_NULL> ret = std::make_shared<JSON_NULL>();
-			return ret->parser(ss);
+			return ret->parser(ss, fa);
 		}
 		//else
 		return std::make_shared<JSON_Error>(ss,

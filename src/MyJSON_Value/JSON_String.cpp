@@ -6,7 +6,9 @@
 namespace MyJSON
 {
 	/*----------parser----------*/
-	std::shared_ptr<JSON_Value> JSON_String::parser(std::stringstream& ss)
+	std::shared_ptr<JSON_Value> JSON_String::parser(
+			std::stringstream& ss,
+			std::shared_ptr<JSON_Value> fa)
 	{
 		ignore_blank(ss);
 		std::string ms = ss.str().substr(ss.tellg());
@@ -14,6 +16,7 @@ namespace MyJSON
 		std::regex pattern("^\"[^\"]*\"");
 		if (std::regex_search(ms, match, pattern)) {
 			std::shared_ptr<JSON_String> ret = std::make_shared<JSON_String>();
+			ret->set_father(fa);
 			ret->parser_set_value(match.str());
 			ss.ignore(match.str().size());
 			return ret;

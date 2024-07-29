@@ -8,7 +8,9 @@ namespace MyJSON
 		bool value_ = false;
 
 	public:
-		std::shared_ptr<JSON_Value> parser(std::stringstream& ss) override;
+		std::shared_ptr<JSON_Value> parser(
+			std::stringstream& ss,
+			std::shared_ptr<JSON_Value> fa) override;
 		std::ostream& print(std::ostream& os) override;
 
 		bool get_value()

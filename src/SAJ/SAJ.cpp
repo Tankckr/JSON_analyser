@@ -2,7 +2,7 @@
 
 namespace SAJ
 {
-	int error_line = 1;
+	int SAJ_Parser::error_line = 1;
 	void SAJ_Parser::ignore_blank(std::stringstream& ss)
 	{
 		while (ss.peek() > 0 && ss.peek() <= 32) {

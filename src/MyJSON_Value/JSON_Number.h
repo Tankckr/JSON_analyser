@@ -12,7 +12,9 @@ namespace MyJSON
 		bool value_type_ = false;	//false: Int, true: double
 		bool out_of_range_ = false;
 	public:
-		std::shared_ptr<JSON_Value> parser(std::stringstream& ss) override;
+		std::shared_ptr<JSON_Value> parser(
+			std::stringstream& ss,
+			std::shared_ptr<JSON_Value> fa) override;
 		std::ostream& print(std::ostream& os) override;
 
 		std::string get_value_type()

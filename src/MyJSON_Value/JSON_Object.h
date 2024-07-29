@@ -14,7 +14,9 @@ namespace MyJSON
 			child_.insert({ key,value });
 		}
 	public:
-		std::shared_ptr<JSON_Value> parser(std::stringstream& ss) override;
+		std::shared_ptr<JSON_Value> parser(
+			std::stringstream& ss,
+			std::shared_ptr<JSON_Value> fa) override;
 		std::ostream& print(std::ostream& os) override;
 
 		std::shared_ptr<JSON_Value> operator [] (std::string key)
@@ -27,7 +29,8 @@ namespace MyJSON
 		}
 		void insert(std::string key, std::shared_ptr<JSON_Value> value)
 		{
-			child_.insert({'"' + key + '"',value });
+			value->set_father(shared_from_this());
+			child_.insert({ '"' + key + '"',value });
 		}
 
 		JSON_Object():JSON_Value(JOBJECT) {}
