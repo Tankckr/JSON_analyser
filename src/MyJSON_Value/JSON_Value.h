@@ -28,7 +28,9 @@ namespace MyJSON
 			father_ = f;
 		}
 
-		std::shared_ptr<JSON_Value> parser(std::ifstream& fs);
+		std::shared_ptr<JSON_Value> parser(
+				std::istream& is,
+				std::shared_ptr<JSON_Value> fa = nullptr);
 		virtual std::shared_ptr<JSON_Value> parser(
 				std::stringstream& ss,
 				std::shared_ptr<JSON_Value> fa = nullptr);

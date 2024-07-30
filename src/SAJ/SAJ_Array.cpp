@@ -6,9 +6,7 @@ namespace SAJ
 	{
 		p.array_start();
 		if (ss.peek() != '[') {
-			p.error(error_line,
-					"_"+ss.peek(),
-					"Error: array syntax, Expect: '['");
+			p.error(error_line, "Error: array syntax, Expect: '['");
 			return false;
 		}ss.ignore();
 		ignore_blank(ss);
@@ -32,15 +30,11 @@ namespace SAJ
 				p.array_end();
 				return true;
 			} else {
-				p.error(error_line,
-						"_" + ss.peek(),
-						"Error: array syntax, Expect: ','");
+				p.error(error_line, "Error: array syntax, Expect: ','");
 				return false;
 			}
 		}
-		p.error(error_line,
-				"" + ss.str().back(),
-				"Error: Stream unexpectedly over");
+		p.error(error_line, "12345Error: Stream unexpectedly over");
 		return false;
 	}
 }

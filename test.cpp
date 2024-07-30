@@ -67,7 +67,7 @@ TEST(JSON_object, parser)
 {
 	std::stringstream ss;
 	ss << "{\"key2\":123,\"key1\":\"v1\",\"key3\":false,\"key5\":[1,2,3]}";
-	std::shared_ptr<JSON_Object> p = obj_parser.parser(ss, father)->get_obj();
+	std::shared_ptr<JSON_Object> p = val_parser.parser(ss, father)->get_obj();
 	std::cout << ss.str();
 	p->print(std::cout);
 	ASSERT_EQ(JOBJECT, p->get_type());
@@ -78,6 +78,19 @@ TEST(JSON_object, parser)
 	EXPECT_EQ(father, p->get_father());
 	EXPECT_EQ(p, (*p)["key3"]->get_father());
 
+}
+TEST(JSON_object, ostream)
+{
+	std::ifstream file("../test_sample2.json");
+	if (file.is_open())
+	{
+		std::shared_ptr<JSON_Value> p = val_parser.parser(file, father);
+		EXPECT_EQ(JOBJECT, p->get_type());
+		p->print(std::cout);
+	} else {
+		std::cout << "cannot open\n";
+	}
+		
 }
 TEST(JSON_object, insert)
 {
