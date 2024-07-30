@@ -26,14 +26,6 @@ MyJSON_Value/JSON_Error.h
 SAJ/SAJ.h
 /home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/SAJ/SAJ.h
 
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/Global_JSON.cpp
-Global_JSON.h
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/Global_JSON.h
-JSON_Value.h
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Value.h
-regex
--
-
 /home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/Global_JSON.h
 iostream
 -
@@ -52,41 +44,17 @@ variant
 memory
 -
 
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Array.cpp
-JSON_Array.h
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Array.h
-JSON_Error.h
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Error.h
-
 /home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Array.h
 JSON_Value.h
 /home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Value.h
-
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Bool.cpp
-JSON_Bool.h
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Bool.h
-JSON_Error.h
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Error.h
-regex
--
 
 /home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Bool.h
 JSON_Value.h
 /home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Value.h
 
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Error.cpp
-JSON_Error.h
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Error.h
-
 /home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Error.h
 JSON_Value.h
 /home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Value.h
-
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_NULL.cpp
-JSON_NULL.h
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_NULL.h
-regex
--
 
 /home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_NULL.h
 JSON_Value.h
@@ -94,37 +62,13 @@ JSON_Value.h
 JSON_Error.h
 /home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Error.h
 
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Number.cpp
-JSON_Number.h
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Number.h
-JSON_Error.h
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Error.h
-regex
--
-
 /home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Number.h
 JSON_Value.h
 /home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Value.h
 
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Object.cpp
-JSON_Object.h
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Object.h
-JSON_String.h
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_String.h
-JSON_Error.h
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Error.h
-
 /home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Object.h
 JSON_Value.h
 /home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Value.h
-
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_String.cpp
-JSON_String.h
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_String.h
-JSON_Error.h
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_Error.h
-regex
--
 
 /home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/src/MyJSON_Value/JSON_String.h
 JSON_Value.h

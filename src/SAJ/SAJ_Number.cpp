@@ -42,7 +42,7 @@ namespace SAJ
 		} else {
 			std::string error_code;
 			getline(ss, error_code);
-			p.error(error_line, error_code, "Error: number invalid");
+			p.error(error_line, "Error: number invalid");
 			return false;
 		}
 	}

@@ -25,7 +25,7 @@ namespace SAJ
 			return SAJ_null(ss, p);
 		}
 		//else
-		p.error(error_line, ""+ss.peek(), "Error: unknown type");
+		p.error(error_line, "Error: unknown type");
 		return false;
 	}
 }

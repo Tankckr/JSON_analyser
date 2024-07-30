@@ -217,12 +217,10 @@ class MyJSON_Processor:public SAJ_Processor
 		}
 	}
 	virtual void error(int error_line,
-		std::string last_token,
 		std::string error_info) override
 	{
-		std::cerr << error_line << '\n';
-		std::cerr << error_info << '\n';
-		std::cerr << last_token << '\n';
+		std::cout << "lines " << error_line << '\n';
+		std::cout << error_info << '\n';
 	}
 
 public:

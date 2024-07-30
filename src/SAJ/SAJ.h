@@ -22,7 +22,6 @@ namespace SAJ
 		virtual void boolean(bool) = 0;
 		virtual void null() = 0;
 		virtual void error(int error_line,
-						   std::string last_token,
 						   std::string error_info) = 0;
 	};
 

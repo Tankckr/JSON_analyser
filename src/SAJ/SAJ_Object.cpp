@@ -7,9 +7,7 @@ namespace SAJ
 	{
 		p.object_start();
 		if (ss.peek() != '{') {
-			p.error(error_line,
-					"_"+ss.peek(),
-					"Error: object syntax, Expect:'{'");
+			p.error(error_line, "Error: object syntax, Expect:'{'");
 			return false;
 		}ss.ignore();
 		ignore_blank(ss);
@@ -30,15 +28,13 @@ namespace SAJ
 			} else {
 				std::string error_code;
 				getline(ss, error_code);
-				p.error(error_line, error_code, "Error: object key invalid");
+				p.error(error_line, "Error: object key invalid");
 				return false;
 			}
 			/*---:---*/
-			ignore_blank(ss);std::cout << "iwanna :\n";
+			ignore_blank(ss);
 			if (ss.peek() != ':') {
-				p.error(error_line,
-						"_"+ss.peek(),
-						"Error: object [key:value]pair, Expect: ':'");
+				p.error(error_line, "Error: object [key:value]pair, Expect: ':'");
 				return false;
 			}ss.ignore();
 			/*---value---*/
@@ -56,14 +52,11 @@ namespace SAJ
 				p.object_end();
 				return true;
 			} else {
-				p.error(error_line, "_"+ss.peek(),
-						"Error: object syntax, Expect: ','");
+				p.error(error_line, "Error: object syntax, Expect: ','");
 				return false;
 			}
 		}
-		p.error(error_line,
-				"" + ss.str().back(),
-				"Error: Stream unexpectedly over");
+		p.error(error_line, "objectError: Stream unexpectedly over");
 		return false;
 	}
 }

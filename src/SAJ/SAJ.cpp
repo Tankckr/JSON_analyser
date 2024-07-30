@@ -15,7 +15,8 @@ namespace SAJ
 	void parse_to_SAJ(std::stringstream& ss, SAJ_Processor& p)
 	{
 		p.parse_start();
-		if(!SAJ_Parser::SAJ_value(ss, p)) {
+		if (!SAJ_Parser::SAJ_value(ss, p)) {
+			std::cout << "Error!!!\n";
 			return;
 		}
 		p.parse_end();

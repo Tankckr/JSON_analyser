@@ -21,7 +21,7 @@ namespace SAJ
 		} else {
 			std::string error_code;
 			getline(ss, error_code);
-			p.error(error_line, error_code, "Error: unknown value type");
+			p.error(error_line, "Error: unknown value type");
 			return false;
 		}
 	}

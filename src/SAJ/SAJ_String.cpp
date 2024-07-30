@@ -16,7 +16,7 @@ namespace SAJ
 		} else {
 			std::string error_code;
 			getline(ss, error_code);
-			p.error(error_line, error_code, "Error: string invalid");
+			p.error(error_line, "Error: string invalid");
 			return false;
 		}
 }
