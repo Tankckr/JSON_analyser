@@ -134,7 +134,7 @@ get_type() == Jnull;
 #### 处理器
 > 用户自定义的部分  
 > *继承处理器基类 SAJ_Processor，然后重载里面的函数自定义解析*  
-> 设计文档中有样例->[《设计文档》](./设计文档.md)
+> 设计文档中有样例->[《设计文档》](./doc/设计文档.md)
 ```cpp
 class SAJ_Processor
 {
@@ -190,7 +190,7 @@ std::ostream& JSON_Error::print(std::ostream& os)
 }
 ```
 > *输出效果 (以std::cout为例)*  
-![JSON_Error sample](./pic_src/JSON_Error.png)
+![JSON_Error sample](./doc/pic_src/JSON_Error.png)
 
 ### JSON_Value::get_xxx()
 > 获取指针与指向对象不符时产生
@@ -213,4 +213,4 @@ iwanna [JSON_Type], your type: [JSON_Type]
 > 前面是当前函数期望获取的***类型***，后面是调用此函数的JSON_Value实际存放的***类型***
 
 ---
-### 详情请移步:[《设计文档》](./设计文档.md)
+### 详情请移步:[《设计文档》](./doc/设计文档.md)

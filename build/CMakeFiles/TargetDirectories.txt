@@ -1,8 +1,0 @@
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/build/CMakeFiles/rebuild_cache.dir
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/build/CMakeFiles/edit_cache.dir
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/build/test/CMakeFiles/edit_cache.dir
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/build/test/CMakeFiles/rebuild_cache.dir
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/build/test/CMakeFiles/MyJSONTests.dir
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/build/SAJtest/CMakeFiles/rebuild_cache.dir
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/build/SAJtest/CMakeFiles/edit_cache.dir
-/home/scutech/Desktop/codes/JSON_analyser/JSON_analyser/build/SAJtest/CMakeFiles/SAJTests.dir
