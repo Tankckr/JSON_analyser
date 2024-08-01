@@ -39,9 +39,9 @@ namespace SAJ
 		static bool SAJ_bool(std::stringstream&, SAJ_Processor&);
 		static bool SAJ_null(std::stringstream&, SAJ_Processor&);
 
-		friend void parse_to_SAJ(std::stringstream&, SAJ_Processor&);
+		friend void parse_to_SAJ(std::istream&, SAJ_Processor&);
 	};
 	//可以把这个类参数弄成一个模板，静态在执行效率上面会有些许优势
-	void parse_to_SAJ(std::stringstream&, SAJ_Processor&);
+	void parse_to_SAJ(std::istream&, SAJ_Processor&);
 
 }

@@ -171,13 +171,13 @@ class SAJ_Parser
 	static bool SAJ_bool(std::stringstream&, SAJ_Processor&);
 	static bool SAJ_null(std::stringstream&, SAJ_Processor&);
 
-	friend void parse_to_SAJ(std::stringstream&, SAJ_Processor&);
+	friend void parse_to_SAJ(std::istream&, SAJ_Processor&);
 };
 ```
 #### 流式解析接口
 > SAJ_Parser的友元函数
 ```cpp
-void parse_to_SAJ(std::stringstream&, SAJ_Processor&);
+void parse_to_SAJ(std::istream&, SAJ_Processor&);
 ```
 ## 错误信息
 ### JSON_Error
