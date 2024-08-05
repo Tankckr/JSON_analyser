@@ -10,8 +10,8 @@ JSON_String str_parser;
 JSON_Number num_parser;
 JSON_Bool boo_parser;
 JSON_NULL nul_parser;
-std::stringstream ss;
-JSON_Error err_parser(ss);
+std::stringstream es;
+JSON_Error err_parser(es);
 std::shared_ptr<JSON_Value> father;
 
 int main(int argc, char **argv)
@@ -47,19 +47,19 @@ TEST(JSON_value, get_xxx)
 }
 TEST(JSON_error, print)
 {
-	std::shared_ptr<JSON_Error> p(new JSON_Error(ss));
+	std::shared_ptr<JSON_Error> p(new JSON_Error(es));
 	p->print(std::cout);
-	p = std::make_shared<JSON_Error>(ss, 0, syntax_error_object);
+	p = std::make_shared<JSON_Error>(es, 0, syntax_error_object);
 	p->print(std::cout);
-	p = std::make_shared<JSON_Error>(ss, 0, syntax_error_array);
+	p = std::make_shared<JSON_Error>(es, 0, syntax_error_array);
 	p->print(std::cout);
-	p = std::make_shared<JSON_Error>(ss, 0, syntax_error_string);
+	p = std::make_shared<JSON_Error>(es, 0, syntax_error_string);
 	p->print(std::cout);
-	p = std::make_shared<JSON_Error>(ss, 0, syntax_error_number);
+	p = std::make_shared<JSON_Error>(es, 0, syntax_error_number);
 	p->print(std::cout);
-	p = std::make_shared<JSON_Error>(ss, 0, syntax_error_unknown_type);
+	p = std::make_shared<JSON_Error>(es, 0, syntax_error_unknown_type);
 	p->print(std::cout);
-	p = std::make_shared<JSON_Error>(ss, 0, error_broken_file);
+	p = std::make_shared<JSON_Error>(es, 0, error_broken_file);
 	p->print(std::cout);
 }
 /*-----类函数-----*/
@@ -72,7 +72,7 @@ TEST(JSON_object, parser)
 	p->print(std::cout);
 	ASSERT_EQ(JOBJECT, p->get_type());
 	EXPECT_EQ(p->get_size(), 4);
-	EXPECT_EQ("\"v1\"", (*p)["key1"]->get_str()->get_value());
+	EXPECT_EQ("v1", (*p)["key1"]->get_str()->get_value());
 	EXPECT_EQ((*(*p)["key5"]->get_arr())[2]->get_num()->get_value_string(), "3");
 
 	EXPECT_EQ(father, p->get_father());
@@ -126,7 +126,7 @@ TEST(JSON_array, parser)
 	EXPECT_EQ(5, (*p)[5]->get_arr()->get_size());
 	EXPECT_EQ(987.65432, std::get<double>((*p)[1]->get_num()->get_value()));
 	EXPECT_EQ(true, (*(*p)[5]->get_arr())[1]->get_boo()->get_value());
-	EXPECT_EQ("\"耶\"", (*(*p)[5]->get_arr())[3]->get_str()->get_value());
+	EXPECT_EQ("耶", (*(*p)[5]->get_arr())[3]->get_str()->get_value());
 	EXPECT_EQ(p, (*p)[3]->get_father());
 	EXPECT_EQ((*p)[5], (*(*p)[5]->get_arr())[4]->get_father());
 }
@@ -153,9 +153,9 @@ TEST(JSON_string, all)
 	std::shared_ptr<JSON_String> p = str_parser.parser(ss, father)->get_str();
 
 	ASSERT_EQ(JSTRING, p->get_type());
-	EXPECT_EQ("\"wi298d9wqh)+*(#^@!~epa{}.jkogq7 qgbc\"", p->get_value());
+	EXPECT_EQ("wi298d9wqh)+*(#^@!~epa{}.jkogq7 qgbc", p->get_value());
 	p->set_value("Hello GTEST  orz");
-	EXPECT_EQ("\"Hello GTEST  orz\"", p->get_value());
+	EXPECT_EQ("Hello GTEST  orz", p->get_value());
 	EXPECT_EQ(p->get_father(), father);
 }
 TEST(JSON_number, all)

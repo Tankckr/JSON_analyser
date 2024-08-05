@@ -5,7 +5,7 @@ namespace MyJSON
 {
 	/*----------parser----------*/
 	std::shared_ptr<JSON_Value> JSON_Array::parser(
-			std::stringstream& ss,
+			std::istream& ss,
 			std::shared_ptr<JSON_Value> fa)
 	{
 		ignore_blank(ss);
@@ -13,7 +13,8 @@ namespace MyJSON
 			return std::make_shared<JSON_Error>(ss,
 												ss.tellg(),
 												syntax_error_array);
-		}ss.ignore();
+		}
+		ss.ignore();
 
 		std::shared_ptr<JSON_Array> ret = std::make_shared<JSON_Array>();
 		ret->set_father(fa);
@@ -41,9 +42,12 @@ namespace MyJSON
 			} else if (ss.peek() == ']') {
 				ss.ignore();
 				return ret;
-			} else return std::make_shared<JSON_Error>(ss,
-													   ss.tellg(),
-													   syntax_error_array);
+			} else {
+				std::cout << "i haven't got , !\n";
+				return std::make_shared<JSON_Error>(ss,
+													ss.tellg(),
+													syntax_error_array);
+			}
 			/*---next---*/
 		}
 		return std::make_shared<JSON_Error>(ss, ss.tellg(), error_broken_file);

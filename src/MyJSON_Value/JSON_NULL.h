@@ -8,11 +8,11 @@ namespace MyJSON
 	{
 	public:
 		std::shared_ptr<JSON_Value> parser(
-			std::stringstream& ss,
+			std::istream& ss,
 			std::shared_ptr<JSON_Value> fa) override;
 		std::ostream& print(std::ostream& os) override;
 
 		JSON_NULL():JSON_Value(JNULL) {}
-		~JSON_NULL() {}
+		virtual ~JSON_NULL() {}
 	};
 }

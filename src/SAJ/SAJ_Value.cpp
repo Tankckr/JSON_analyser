@@ -2,7 +2,7 @@
 
 namespace SAJ
 {
-	bool SAJ_Parser::SAJ_value(std::stringstream& ss, SAJ_Processor& p)
+	bool SAJ_Parser::SAJ_value(std::istream& ss, SAJ_Processor& p)
 	{
 		ignore_blank(ss);
 		char ch = ss.peek();

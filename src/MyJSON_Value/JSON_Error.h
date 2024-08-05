@@ -12,7 +12,7 @@ namespace MyJSON
 
 		std::ostream& print(std::ostream& os) override;
 
-		JSON_Error(std::stringstream& ss, int p = 0, std::string e = no_error):
+		JSON_Error(std::istream& ss, int p = 0, std::string e = no_error):
 			JSON_Value(JERROR),
 			error_type_(e),
 			error_pos_(p)
@@ -20,5 +20,7 @@ namespace MyJSON
 			ss.seekg(error_pos_);
 			getline(ss, error_code_);
 		}
+
+		virtual ~JSON_Error() {}
 	};
 }

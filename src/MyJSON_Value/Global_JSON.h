@@ -7,6 +7,7 @@
 #include<vector>
 #include<variant>
 #include<memory>
+#include<thread>
 
 namespace MyJSON
 {
@@ -42,11 +43,11 @@ namespace MyJSON
 	extern std::string no_error;
 
 	/*----------非成员函数声明----------*/
-	void ignore_blank(std::stringstream& ss);
+	void ignore_blank(std::istream& is);
 	std::ostream& operator<< (std::ostream& os,
 							  std::shared_ptr<JSON_Value>& v);
 	std::string type_string(JSON_Type& t);
 	/*----------全局变量声明----------*/
-	extern int tab_deep;
-	extern int error_line;
+	thread_local extern int tab_deep;
+	thread_local extern int error_line;
 }

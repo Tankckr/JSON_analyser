@@ -13,7 +13,7 @@ namespace MyJSON
 		bool out_of_range_ = false;
 	public:
 		std::shared_ptr<JSON_Value> parser(
-			std::stringstream& ss,
+			std::istream& ss,
 			std::shared_ptr<JSON_Value> fa) override;
 		std::ostream& print(std::ostream& os) override;
 
@@ -32,6 +32,6 @@ namespace MyJSON
 		bool set_value(std::string _v);
 
 		JSON_Number():JSON_Value(JNUMBER) {}
-		~JSON_Number() {}
+		virtual ~JSON_Number() {}
 	};
 }

@@ -9,7 +9,7 @@ namespace MyJSON
 
 	public:
 		std::shared_ptr<JSON_Value> parser(
-			std::stringstream& ss,
+			std::istream& is,
 			std::shared_ptr<JSON_Value> fa) override;
 		std::ostream& print(std::ostream& os) override;
 
@@ -29,6 +29,6 @@ namespace MyJSON
 		}
 
 		JSON_Array():JSON_Value(JARRAY) {}
-		~JSON_Array() {}
+		virtual ~JSON_Array() {}
 	};
 }

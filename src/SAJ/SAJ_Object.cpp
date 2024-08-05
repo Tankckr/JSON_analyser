@@ -1,9 +1,8 @@
 #include"SAJ.h"
-#include<regex>
 
 namespace SAJ
 {
-	bool SAJ_Parser::SAJ_object(std::stringstream& ss, SAJ_Processor& p)
+	bool SAJ_Parser::SAJ_object(std::istream& ss, SAJ_Processor& p)
 	{
 		p.object_start();
 		if (ss.peek() != '{') {
@@ -19,16 +18,23 @@ namespace SAJ
 		while (ss.peek() != EOF) {
 			ignore_blank(ss);
 			/*---key---*/
-			std::string ms = ss.str().substr(ss.tellg());
-			std::smatch match;
-			std::regex pattern("^\"[^\"]*\"");
-			if (std::regex_search(ms, match, pattern)) {
-				p.object_key(match.str());
-				ss.ignore(match.str().size());
+			if (ss.peek() == '"') {
+				ss.ignore();
+				std::string str = "";
+				while (ss.peek() != '"' && ss.peek() != EOF)
+				{
+					str += char(ss.peek());
+					ss.ignore();
+				}
+				if (ss.peek() == '"') {
+					ss.ignore();
+					p.object_key(str);
+				} else {
+					p.error(error_line, "Error: stream ended unexpectedly");
+					return false;
+				}
 			} else {
-				std::string error_code;
-				getline(ss, error_code);
-				p.error(error_line, "Error: object key invalid");
+				p.error(error_line, "Error: object key syntax, Expect: '\"'");
 				return false;
 			}
 			/*---:---*/

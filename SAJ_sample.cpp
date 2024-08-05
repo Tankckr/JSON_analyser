@@ -238,7 +238,6 @@ int main()
 		std::stringstream ss;
 		ss << file.rdbuf();
 		parse_to_SAJ(ss, pro);
-		std::cout << "SAJ success!\n";
 		pro.get_root()->print(std::cout);
 	} else
 		std::cout << "open failed\n";

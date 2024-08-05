@@ -1,28 +1,41 @@
 #include"SAJ.h"
-#include<regex>
 
 namespace SAJ
 {
-	bool SAJ_Parser::SAJ_bool(std::stringstream& ss, SAJ_Processor& p)
+	bool SAJ_Parser::SAJ_bool(std::istream& ss, SAJ_Processor& p)
 	{
 		ignore_blank(ss);
-		std::string ms = ss.str().substr(ss.tellg());
-		std::smatch match;
-		std::regex T("^(true)");
-		std::regex F("^(false)");
-		if (std::regex_search(ms, match, T)) {
-			p.boolean(true);
-			ss.ignore(4);
-			return true;
-		} else if (std::regex_search(ms, match, F)) {
-			p.boolean(false);
-			ss.ignore(5);
-			return true;
-		} else {
-			std::string error_code;
-			getline(ss, error_code);
-			p.error(error_line, "Error: unknown value type");
-			return false;
+		if (ss.peek() == 't') {
+			ss.ignore();
+			if (ss.peek() == 'r') {
+				ss.ignore();
+				if (ss.peek() == 'u') {
+					ss.ignore();
+					if (ss.peek() == 'e') {
+						ss.ignore();
+						p.boolean(true);
+						return true;
+					}
+				}
+			}
+		} else if (ss.peek() == 'f') {
+			ss.ignore();
+			if (ss.peek() == 'a') {
+				ss.ignore();
+				if (ss.peek() == 'l') {
+					ss.ignore();
+					if (ss.peek() == 's') {
+						ss.ignore();
+						if (ss.peek() == 'e') {
+							ss.ignore();
+							p.boolean(false);
+							return true;
+						}
+					}
+				}
+			}
 		}
+		p.error(error_line, "Error: unknown value type");
+		return false;
 	}
 }
