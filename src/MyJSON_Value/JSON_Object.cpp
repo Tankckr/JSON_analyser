@@ -6,7 +6,7 @@ namespace MyJSON
 {
 	/*----------parser----------*/
 	std::shared_ptr<JSON_Value> JSON_Object::parser(
-			std::stringstream& ss,
+			std::istream& ss,
 			std::shared_ptr<JSON_Value> fa)
 	{
 		ignore_blank(ss);

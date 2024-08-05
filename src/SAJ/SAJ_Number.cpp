@@ -3,17 +3,26 @@
 
 namespace SAJ
 {
-	bool SAJ_Parser::SAJ_number(std::stringstream& ss, SAJ_Processor& p)
+	bool SAJ_Parser::SAJ_number(std::istream& ss, SAJ_Processor& p)
 	{
 		ignore_blank(ss);
-		std::string ms = ss.str().substr(ss.tellg());
+		std::string ms = "";
+		while (ss.peek() == '-' || ss.peek() == '+' ||
+			   ss.peek() == '.' || (ss.peek() >= '0' && ss.peek() <= '9') ||
+			   ss.peek() == 'e' || ss.peek() == 'E')
+		{
+			if (ss.peek() == EOF) {
+				break;
+			}
+			ms += ss.peek();
+			ss.ignore();
+		}
 		std::smatch match;
 		std::regex number(
 			"^-?([0]|[1-9][0-9]*)(\\.[0-9]{1,})?([e|E][+|-]?[1-9][0-9]*)?");
 		if (std::regex_search(ms, match, number)) {
 			bool value_type = false;
 			std::string value = match.str();
-			ss.ignore(match.str().size());
 			// figure int or double
 			for (int i = 0; i < value.size(); i++) {
 				if (value[i] == '.' || value[i] == 'e' || value[i] == 'E') {

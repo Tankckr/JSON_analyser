@@ -2,6 +2,7 @@
 #include<iostream>
 #include<sstream>
 #include<stdint.h>
+#include<thread>
 namespace SAJ
 {
 	//处理器
@@ -28,16 +29,16 @@ namespace SAJ
 	//解析器
 	class SAJ_Parser
 	{
-		static int error_line;
-		static void ignore_blank(std::stringstream& ss);
+		thread_local static int error_line;
+		static void ignore_blank(std::istream& ss);
 		
-		static bool SAJ_value(std::stringstream&, SAJ_Processor&);
-		static bool SAJ_object(std::stringstream&, SAJ_Processor&);
-		static bool SAJ_array(std::stringstream&, SAJ_Processor&);
-		static bool SAJ_string(std::stringstream&, SAJ_Processor&);
-		static bool SAJ_number(std::stringstream&, SAJ_Processor&);
-		static bool SAJ_bool(std::stringstream&, SAJ_Processor&);
-		static bool SAJ_null(std::stringstream&, SAJ_Processor&);
+		static bool SAJ_value(std::istream&, SAJ_Processor&);
+		static bool SAJ_object(std::istream&, SAJ_Processor&);
+		static bool SAJ_array(std::istream&, SAJ_Processor&);
+		static bool SAJ_string(std::istream&, SAJ_Processor&);
+		static bool SAJ_number(std::istream&, SAJ_Processor&);
+		static bool SAJ_bool(std::istream&, SAJ_Processor&);
+		static bool SAJ_null(std::istream&, SAJ_Processor&);
 
 		friend void parse_to_SAJ(std::istream&, SAJ_Processor&);
 	};

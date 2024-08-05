@@ -1,17 +1,16 @@
 #include"Global_JSON.h"
 #include"JSON_Value.h"
-#include <regex>
 
 namespace MyJSON
 {
 	/*----------非成员函数定义----------*/
-	void ignore_blank(std::stringstream& ss)
+	void ignore_blank(std::istream& is)
 	{
-		while (ss.peek() > 0 && ss.peek() <= 32) {
-			if (ss.peek() == '\n') {
+		while (is.peek() > 0 && is.peek() <= 32) {
+			if (is.peek() == '\n') {
 				error_line++;
 			}
-			ss.ignore();
+			is.ignore();
 		}
 	}
 	std::ostream& operator<< (std::ostream& os, std::shared_ptr<JSON_Value>& v)
@@ -65,6 +64,6 @@ namespace MyJSON
 	std::string no_error = "NoError?";
 
 	/*----------全局变量初始化----------*/
-	int tab_deep = 0;
-	int error_line = 1;
+	thread_local int tab_deep = 0;
+	thread_local int error_line = 1;
 }

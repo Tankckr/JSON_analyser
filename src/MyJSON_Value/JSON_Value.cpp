@@ -59,19 +59,12 @@ namespace MyJSON
 	}
 
 	/*----------parser----------*/
-	std::shared_ptr<JSON_Value> JSON_Value::parser(
-		std::istream& is,
-		std::shared_ptr<JSON_Value> fa)
-	{
-		std::stringstream ss;
-		ss << is.rdbuf();
-		return parser(ss, fa);
-	}
+
 	/// @brief JSON_value的parser不会变更自身指针，如果在最外层处理的时候记得获取返回值
-	/// @param std::stringstream& ss
+	/// @param std::istream& ss
 	/// @return std::shared_ptr<JSON_Value>
 	std::shared_ptr<JSON_Value> JSON_Value::parser(
-			std::stringstream& ss,
+			std::istream& ss,
 			std::shared_ptr<JSON_Value> fa)
 	{
 		ignore_blank(ss);

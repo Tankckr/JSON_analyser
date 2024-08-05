@@ -56,15 +56,25 @@ namespace MyJSON
 	}
 	/*----------parser----------*/
 	std::shared_ptr<JSON_Value> JSON_Number::parser(
-			std::stringstream& ss,
+			std::istream& ss,
 			std::shared_ptr<JSON_Value> fa)
 	{
 		ignore_blank(ss);
-		std::string ms = ss.str().substr(ss.tellg());
+		std::string ms = "";
+		while (ss.peek() == '-' || ss.peek() == '+' ||
+			   ss.peek() == '.' || (ss.peek() >= '0' && ss.peek() <= '9') ||
+			   ss.peek() == 'e' || ss.peek() == 'E')
+		{
+			if (ss.peek() == EOF) {
+				break;
+			}
+			ms += ss.peek();
+			ss.ignore();
+		}
 		std::smatch match;
 		std::regex number(
 			"^-?([0]|[1-9][0-9]*)(\\.[0-9]{1,})?([e|E][+|-]?[1-9][0-9]*)?");
-		if (std::regex_search(ms, match, number)) {
+		if (std::regex_match(ms, match, number)) {
 			std::shared_ptr<JSON_Number> ret = std::make_shared<JSON_Number>();
 			ret->set_father(fa);
 			if (!ret->set_value(match.str())) {
@@ -72,7 +82,6 @@ namespace MyJSON
 													ss.tellg(),
 													syntax_error_number);
 			}
-			ss.ignore(match.str().size());
 			return ret;
 		} else {
 			return std::make_shared<JSON_Error>(ss,

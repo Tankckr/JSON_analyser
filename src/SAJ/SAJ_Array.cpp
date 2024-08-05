@@ -2,7 +2,7 @@
 
 namespace SAJ
 {
-	bool SAJ_Parser::SAJ_array(std::stringstream& ss, SAJ_Processor& p)
+	bool SAJ_Parser::SAJ_array(std::istream& ss, SAJ_Processor& p)
 	{
 		p.array_start();
 		if (ss.peek() != '[') {
