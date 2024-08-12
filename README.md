@@ -24,30 +24,34 @@
 >**所有MyJSON库中的函数以及类，都在namespace MyJSON**
 ### JSON_Value树
 #### 解析接口&输出接口
+>**JSON_Parser** 和 **JSON_Printer**  
 >创建一个JSON_Value对象，通过其解析器返回解析出来的JSON树  
->>*返回一个智能指针*
 ```cpp
-std::shared_ptr<MyJSON::JSON_Value> JSON_Value::parser(
-		std::istream& is,
-		std::shared_ptr<JSON_Value> father);
-
 using namespace MyJSON;
 //解析json
-JSON_Value Myparser
-std::shared_ptr<JSON_Value> JS = MyParser.parser(yourStream);
+istream is;
+JSON_Parser MyParser
+JSON_Value root;
+if(!MyParser.parse(is, root))
+{
+	// Error
+	Parse_State error_state1 = MyParser.print_error();//获取错误状态对象或者直接打印
+}
+
 //输出json
-JS->print(your ofstream);	// or std::cout
-```
->*JSON_\* 对象都有相应的parser和print（Value禁止 print，但指向子类的指针允许）*  
-```cpp
-virtual std::ostream& JSON_Value::print(std::ostream& os);
+ostream os;
+JSON_Printer MyPrinter;
+if(!MyPrinter.print(os, root))
+{
+	// Error
+	Print_State error_state2 = MyPrinter.print_error();//获取错误状态对象或者直接打印
+}
 ```
 #### 调用接口
 >***MyJSON Type***  
 ```cpp
 enum JSON_Type
 {
-	JERROR = -1,
 	JINITIAL,	//initial state means JSON_Value
 	JOBJECT,
 	JARRAY,
@@ -63,6 +67,7 @@ std::shared_ptr<JSON_Object> Myobject = JS->get_obj();
 
 get_type() == JOBJECT;
 get_size()		//number of pairs in the Myobject
+get_child()		//return cites of the unordered_map
 
 Myobject[key]	//return a shared_ptr<JSON_Value>, key's sample: "name"
 
@@ -74,6 +79,7 @@ std::shared_ptr<JSON_Array> Myarray = JS->get_arr();
 
 get_type() == Jarray;
 get_size()		//number of values in the Myarray;
+get_child()		//return cites of the vector
 
 Myarray[index]	//return a shared_ptr<JSON_Value>
 
@@ -179,17 +185,34 @@ class SAJ_Parser
 ```cpp
 void parse_to_SAJ(std::istream&, SAJ_Processor&);
 ```
-## 错误信息
-### JSON_Error
+## 解析状态（错误信息）
+### Parse_State & Print_State
 ```cpp
-std::ostream& JSON_Error::print(std::ostream& os)
-{
-	os << error_type_ << "\nin line " << error_line << '\n';
-	os << error_pos_ << "->" << error_code_ << '\n';
-	return os;
-}
+class Parse_State
+	{
+		bool state_ = true;	// Error:false
+		std::string error_code_;
+		int error_line_ = 1;
+	public:
+		void ignore_blank(std::istream& is);	// 解析时跳过空白字符
+		bool get_state();
+		// Error
+		void set_error(std::string ec);
+	};
+JSON_Parser::print_parser();	// 打印错误信息
+
+class Print_State
+	{
+		bool state_ = true;
+		int tab_deep_ = 0;
+	public:
+		void tab(bool ob);	// 打印时计算缩进
+		int tab_deep();
+		bool get_state();
+	};
+JSON_Printer::print_parser();	// 打印错误信息
 ```
-> *输出效果 (以std::cout为例)*  
+> ***输出效果*** *, 以std::cout为例(后续可能会有调整)*  
 ![JSON_Error sample](./doc/pic_src/JSON_Error.png)
 
 ### JSON_Value::get_xxx()
