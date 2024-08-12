@@ -1,6 +1,6 @@
 #include"JSON_Number.h"
-#include"JSON_Error.h"
-
+#include"JSON_Parser.h"
+#include"JSON_Printer.h"
 #include<regex>
 
 namespace MyJSON
@@ -55,15 +55,20 @@ namespace MyJSON
 		return true;
 	}
 	/*----------parser----------*/
-	std::shared_ptr<JSON_Value> JSON_Number::parser(
+	std::shared_ptr<JSON_Value> JSON_Parser::num_parser(
 			std::istream& ss,
-			std::shared_ptr<JSON_Value> fa)
+			std::shared_ptr<JSON_Value> fa,
+			Parse_State& state)
 	{
-		ignore_blank(ss);
+		state.ignore_blank(ss);
 		std::string ms = "";
-		while (ss.peek() == '-' || ss.peek() == '+' ||
-			   ss.peek() == '.' || (ss.peek() >= '0' && ss.peek() <= '9') ||
-			   ss.peek() == 'e' || ss.peek() == 'E')
+		while (ss.peek() == '-' ||
+			   ss.peek() == '+' ||
+			   ss.peek() == '.' ||
+			   (ss.peek() >= '0' &&
+					ss.peek() <= '9') ||
+			   ss.peek() == 'e' ||
+			   ss.peek() == 'E')
 		{
 			if (ss.peek() == EOF) {
 				break;
@@ -71,28 +76,19 @@ namespace MyJSON
 			ms += ss.peek();
 			ss.ignore();
 		}
-		std::smatch match;
-		std::regex number(
-			"^-?([0]|[1-9][0-9]*)(\\.[0-9]{1,})?([e|E][+|-]?[1-9][0-9]*)?");
-		if (std::regex_match(ms, match, number)) {
-			std::shared_ptr<JSON_Number> ret = std::make_shared<JSON_Number>();
-			ret->set_father(fa);
-			if (!ret->set_value(match.str())) {
-				return std::make_shared<JSON_Error>(ss,
-													ss.tellg(),
-													syntax_error_number);
-			}
-			return ret;
-		} else {
-			return std::make_shared<JSON_Error>(ss,
-												ss.tellg(),
-												syntax_error_number);
+		std::shared_ptr<JSON_Number> ret = std::make_shared<JSON_Number>();
+		ret->set_father(fa);
+		if (!ret->set_value(ms)) {
+			state.set_error("SyntaxError: The number is not valid");
+			return nullptr;
 		}
+		return ret;
 	}
 	/*----------print----------*/
-	std::ostream& JSON_Number::print(std::ostream& os)
+	void JSON_Printer::num_printer(std::ostream& os,
+								   std::shared_ptr<JSON_Number> self)
 	{
-		os << value_string_;
-		return os;
+		os << self->get_value_string();
+		return;
 	}
 }

@@ -1,21 +1,23 @@
 #include"JSON_Object.h"
 #include"JSON_String.h"
-#include"JSON_Error.h"
+#include"JSON_Parser.h"
+#include"JSON_Printer.h"
 
 namespace MyJSON
 {
 	/*----------parser----------*/
-	std::shared_ptr<JSON_Value> JSON_Object::parser(
+	std::shared_ptr<JSON_Value> JSON_Parser::obj_parser(
 			std::istream& ss,
-			std::shared_ptr<JSON_Value> fa)
+			std::shared_ptr<JSON_Value> fa,
+			Parse_State& state)
 	{
-		ignore_blank(ss);
+		state.ignore_blank(ss);
 		if (ss.peek() != '{') {
-			return std::make_shared<JSON_Error>(ss,
-												ss.tellg(),
-												syntax_error_object);
-		}ss.ignore();
-		ignore_blank(ss);
+			state.set_error("SyntaxError: The object struct need '{'");
+			return nullptr;
+		}
+		ss.ignore();
+		state.ignore_blank(ss);
 
 		std::shared_ptr<JSON_Object> ret = std::make_shared<JSON_Object>();
 		ret->set_father(fa);
@@ -26,56 +28,69 @@ namespace MyJSON
 
 		while (ss.peek() != EOF) {
 			/*---"key"---*/
-			std::shared_ptr<JSON_String> pS = std::make_shared<JSON_String>();
-			pS = pS->parser(ss, fa)->get_str();	//pS will be destroy
-			if (pS->get_type() == JERROR) {
-				return pS;
+			std::string key;
+			if(ss.peek()=='"')
+			{
+				ss.ignore();
+				while (ss.peek() != '"' && ss.peek() != EOF)
+				{
+					key += char(ss.peek());
+					ss.ignore();
+				}
+				if (ss.peek() == '"') {
+					ss.ignore();
+				} else {
+					state.set_error("SyntaxError: Key's '\"' isn't closed");
+					return nullptr;
+				}
 			}
-			std::string key = pS->get_value();
 			/*---"key"---*/
 			/*---:---*/
-			ignore_blank(ss);
+			state.ignore_blank(ss);
 			if (ss.peek() != ':') {
-				return std::make_shared<JSON_Error>(ss,
-													ss.tellg(),
-													syntax_error_object);
+				state.set_error("SyntaxError: Object struct need ':'");
+				return nullptr;
 			}ss.ignore();
 			/*---:---*/
 			/*---value---*/
-			std::shared_ptr<JSON_Value> pV = std::make_shared<JSON_Value>();
-			pV = pV->parser(ss, ret);
+			std::shared_ptr<JSON_Value> v = std::make_shared<JSON_Value>();
+			v = val_parser(ss, ret, state);
 			/*---value---*/
-			if (pV->get_type() == JERROR) {
-				return pV;
+			if (!state.get_state()) {
+				return nullptr;
 			}
-			ret->parser_insert(key, pV);
+			ret->insert(key, v);
 			/*---next---*/
-			ignore_blank(ss);
+			state.ignore_blank(ss);
 			if (ss.peek() == ',') {
 				ss.ignore();
 				continue;
 			} else if (ss.peek() == '}') {
 				ss.ignore();
 				return ret;
-			} else return std::make_shared<JSON_Error>(ss,
-													   ss.tellg(),
-													   syntax_error_object);
+			} else {
+				state.set_error("SyntaxError: The object struct is not valid");
+				return nullptr;
+			}
 			/*---next---*/
 		}//不完整的文件
-		return std::make_shared<JSON_Error>(ss, ss.tellg(), error_broken_file);
+		state.set_error("FileError: Stream unexpectedly over");
+		return nullptr;
 	}
 	/*----------print----------*/
-	std::ostream& JSON_Object::print(std::ostream& os)
+	void JSON_Printer::obj_printer(std::ostream& os,
+								   std::shared_ptr<JSON_Object> self,
+								   Print_State state)
 	{
-		if (get_size() == 0) {
+		if (self->get_size() == 0) {
 			os << "{}";
-			return os;
+			return;
 		}
-		tab_deep++;
+		state.tab(true);
 		os << "{\n";
-		for (auto it = child_.begin(); it != child_.end(); ++it) {
+		for (auto it = self->get_child().begin(); it != self->get_child().end(); ++it) {
 			auto [k, v] = *it;
-			for (int i = 0; i < tab_deep; i++) {
+			for (int i = 0; i < state.tab_deep(); i++) {
 				os << '\t';
 			}
 			os << k << ':';
@@ -84,16 +99,16 @@ namespace MyJSON
 			} else {
 				os << ' ' << v;
 			}
-			if (std::next(it) != child_.end()) {
+			if (std::next(it) != self->get_child().end()) {
 				os << ',';
 			}
 			os << '\n';
 		}
-		tab_deep--;
-		for (int i = 0; i < tab_deep; i++) {
+		state.tab(false);
+		for (int i = 0; i < state.tab_deep(); i++) {
 			os << '\t';
 		}
 		os << '}';
-		return os;
+		return;
 	}
 }

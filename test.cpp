@@ -10,8 +10,6 @@ JSON_String str_parser;
 JSON_Number num_parser;
 JSON_Bool boo_parser;
 JSON_NULL nul_parser;
-std::stringstream es;
-JSON_Error err_parser(es);
 std::shared_ptr<JSON_Value> father;
 
 int main(int argc, char **argv)
@@ -33,7 +31,6 @@ TEST(GetType_Test, EQ)
     EXPECT_EQ(JNUMBER, num_parser.get_type());
     EXPECT_EQ(JBOOL, boo_parser.get_type());
 	EXPECT_EQ(JNULL, nul_parser.get_type());
-    EXPECT_EQ(JERROR, err_parser.get_type());
 }
 /*-----报错-----*/
 TEST(JSON_value, get_xxx)
@@ -41,27 +38,11 @@ TEST(JSON_value, get_xxx)
 	EXPECT_THROW(val_parser.get_obj(), const char*);
 	EXPECT_THROW(val_parser.get_arr(), const char*);
 	EXPECT_THROW(val_parser.get_str(), const char*);
-	EXPECT_THROW(err_parser.get_num(), const char*);
-	EXPECT_THROW(err_parser.get_boo(), const char*);
-	EXPECT_THROW(err_parser.get_nul(), const char*);
+	EXPECT_THROW(val_parser.get_num(), const char*);
+	EXPECT_THROW(val_parser.get_boo(), const char*);
+	EXPECT_THROW(val_parser.get_nul(), const char*);
 }
-TEST(JSON_error, print)
-{
-	std::shared_ptr<JSON_Error> p(new JSON_Error(es));
-	p->print(std::cout);
-	p = std::make_shared<JSON_Error>(es, 0, syntax_error_object);
-	p->print(std::cout);
-	p = std::make_shared<JSON_Error>(es, 0, syntax_error_array);
-	p->print(std::cout);
-	p = std::make_shared<JSON_Error>(es, 0, syntax_error_string);
-	p->print(std::cout);
-	p = std::make_shared<JSON_Error>(es, 0, syntax_error_number);
-	p->print(std::cout);
-	p = std::make_shared<JSON_Error>(es, 0, syntax_error_unknown_type);
-	p->print(std::cout);
-	p = std::make_shared<JSON_Error>(es, 0, error_broken_file);
-	p->print(std::cout);
-}
+
 /*-----类函数-----*/
 TEST(JSON_object, parser)
 {

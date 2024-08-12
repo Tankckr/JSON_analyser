@@ -1,5 +1,6 @@
 #pragma once
 #include"JSON_Value.h"
+#include<vector>
 
 namespace MyJSON
 {
@@ -8,10 +9,10 @@ namespace MyJSON
 		std::vector<std::shared_ptr<JSON_Value>> child_;
 
 	public:
-		std::shared_ptr<JSON_Value> parser(
-			std::istream& is,
-			std::shared_ptr<JSON_Value> fa) override;
-		std::ostream& print(std::ostream& os) override;
+		// std::shared_ptr<JSON_Value> parser(
+		// 	std::istream& is,
+		// 	std::shared_ptr<JSON_Value> fa) override;
+		// std::ostream& print(std::ostream& os) override;
 
 		std::shared_ptr<JSON_Value> operator [] (int index)
 		{
@@ -20,6 +21,10 @@ namespace MyJSON
 		int get_size()
 		{
 			return child_.size();
+		}
+		std::vector<std::shared_ptr<JSON_Value>>& get_child()
+		{
+			return child_;
 		}
 		///position in [0~size]
 		void insert(int pos, std::shared_ptr<JSON_Value> value)

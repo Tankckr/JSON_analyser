@@ -1,14 +1,16 @@
 #include"JSON_Bool.h"
-#include"JSON_Error.h"
+#include"JSON_Parser.h"
+#include"JSON_Printer.h"
 
 namespace MyJSON
 {
 	/*----------parser----------*/
-	std::shared_ptr<JSON_Value> JSON_Bool::parser(
+	std::shared_ptr<JSON_Value> JSON_Parser::boo_parser(
 			std::istream& ss,
-			std::shared_ptr<JSON_Value> fa)
+			std::shared_ptr<JSON_Value> fa,
+			Parse_State& state)
 	{
-		ignore_blank(ss);
+		state.ignore_blank(ss);
 		if (ss.peek() == 't') {
 			ss.ignore();
 			if (ss.peek() == 'r') {
@@ -43,18 +45,18 @@ namespace MyJSON
 				}
 			}
 		}
-		return std::make_shared<JSON_Error>(ss,
-											ss.tellg(),
-											syntax_error_unknown_type);
+		state.set_error("TypeError: Unknowned Value Type");
+		return nullptr;
 	}
 	/*----------print----------*/
-	std::ostream& JSON_Bool::print(std::ostream& os)
+	void JSON_Printer::boo_printer(std::ostream& os,
+								   std::shared_ptr<JSON_Bool> self)
 	{
-		if (value_) {
+		if (self->get_value()) {
 			os << "true";
 		} else {
 			os << "false";
 		}
-		return os;
+		return;
 	}
 }

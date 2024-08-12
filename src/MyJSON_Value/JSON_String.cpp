@@ -1,14 +1,16 @@
 #include"JSON_String.h"
-#include"JSON_Error.h"
+#include"JSON_Parser.h"
+#include"JSON_Printer.h"
 
 namespace MyJSON
 {
 	/*----------parser----------*/
-	std::shared_ptr<JSON_Value> JSON_String::parser(
+	std::shared_ptr<JSON_Value> JSON_Parser::str_parser(
 			std::istream& ss,
-			std::shared_ptr<JSON_Value> fa)
+			std::shared_ptr<JSON_Value> fa,
+			Parse_State& state)
 	{
-		ignore_blank(ss);
+		state.ignore_blank(ss);
 		if (ss.peek() == '"') {
 			ss.ignore();
 			std::string str = "";
@@ -25,20 +27,19 @@ namespace MyJSON
 				ret->set_value(str);
 				return ret;
 			} else {
-				return std::make_shared<JSON_Error>(ss,
-													ss.tellg(),
-													error_broken_file);
+				state.set_error("FileError: Stream unexpectedly over");
+				return nullptr;
 			}
 		} else {
-			return std::make_shared<JSON_Error>(ss,
-												ss.tellg(),
-												syntax_error_string);
+			state.set_error("SyntaxError: The string struct need '\"'");
+			return nullptr;
 		}
 	}
 	/*----------print----------*/
-	std::ostream& JSON_String::print(std::ostream& os)
+	void JSON_Printer::str_printer(std::ostream& os,
+								   std::shared_ptr<JSON_String> self)
 	{
-		os << '"' << value_ << '"';
-		return os;
+		os << '"' << self->get_value() << '"';
+		return;
 	}
 }

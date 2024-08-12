@@ -7,10 +7,10 @@ namespace MyJSON
 	{
 		std::string value_ = "";
 	public:
-		std::shared_ptr<JSON_Value> parser(
-			std::istream& ss,
-			std::shared_ptr<JSON_Value> fa) override;
-		std::ostream& print(std::ostream& os) override;
+		// std::shared_ptr<JSON_Value> parser(
+		// 	std::istream& ss,
+		// 	std::shared_ptr<JSON_Value> fa) override;
+		// std::ostream& print(std::ostream& os) override;
 
 		std::string get_value()
 		{

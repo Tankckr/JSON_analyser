@@ -1,24 +1,25 @@
 #include"JSON_Array.h"
-#include"JSON_Error.h"
+#include"JSON_Parser.h"
+#include"JSON_Printer.h"
 
 namespace MyJSON
 {
 	/*----------parser----------*/
-	std::shared_ptr<JSON_Value> JSON_Array::parser(
+	std::shared_ptr<JSON_Value> JSON_Parser::arr_parser(
 			std::istream& ss,
-			std::shared_ptr<JSON_Value> fa)
+			std::shared_ptr<JSON_Value> fa,
+			Parse_State& state)
 	{
-		ignore_blank(ss);
+		state.ignore_blank(ss);
 		if (ss.peek() != '[') {
-			return std::make_shared<JSON_Error>(ss,
-												ss.tellg(),
-												syntax_error_array);
+			state.set_error("SyntaxError: The array struct need '['");
+			return nullptr;
 		}
 		ss.ignore();
+		state.ignore_blank(ss);
 
 		std::shared_ptr<JSON_Array> ret = std::make_shared<JSON_Array>();
 		ret->set_father(fa);
-		ignore_blank(ss);
 		if (ss.peek() == ']') {
 			ss.ignore();
 			return ret;
@@ -26,16 +27,15 @@ namespace MyJSON
 
 		while (ss.peek() != EOF) {
 			/*---value---*/
-			std::shared_ptr<JSON_Value> p = std::make_shared<JSON_Value>();
-			p = p->parser(ss, ret);
+			std::shared_ptr<JSON_Value> v = std::make_shared<JSON_Value>();
+			v = val_parser(ss, ret, state);
 			/*---value---*/
-			if (p->get_type() == JERROR) {
-				return p;
+			if (!state.get_state()) {
+				return nullptr;
 			}
-			// ret->insert(get_size(), p);
-			ret->child_.push_back(p);
+			ret->insert(ret->get_size(), v);
 			/*---next---*/
-			ignore_blank(ss);
+			state.ignore_blank(ss);
 			if (ss.peek() == ',') {
 				ss.ignore();
 				continue;
@@ -43,40 +43,41 @@ namespace MyJSON
 				ss.ignore();
 				return ret;
 			} else {
-				std::cout << "i haven't got , !\n";
-				return std::make_shared<JSON_Error>(ss,
-													ss.tellg(),
-													syntax_error_array);
+				state.set_error("SyntaxError: The array struct is not valid");
+				return nullptr;
 			}
 			/*---next---*/
 		}
-		return std::make_shared<JSON_Error>(ss, ss.tellg(), error_broken_file);
+		state.set_error("FileError: Stream unexpectedly over");
+		return nullptr;
 	}
 	/*----------print----------*/
-	std::ostream& JSON_Array::print(std::ostream& os)
+	void JSON_Printer::arr_printer(std::ostream& os,
+								   std::shared_ptr<JSON_Array> self,
+								   Print_State state)
 	{
-		if (get_size() == 0) {
+		if (self->get_size() == 0) {
 			os << "[]";
-			return os;
+			return;
 		}
-		tab_deep++;
+		state.tab(true);
 		os << "[\n";
-		int n = child_.size();
+		int n = self->get_size();
 		for (int i = 0; i < n; i++) {
-			for (int i = 0; i < tab_deep; i++) {
+			for (int i = 0; i < state.tab_deep(); i++) {
 				os << '\t';
 			}
-			os << child_[i];
+			os << self->get_child()[i];
 			if (i != n - 1) {
 				os << ',';
 			}
 			os << '\n';
 		}
-		tab_deep--;
-		for (int i = 0; i < tab_deep; i++) {
+		state.tab(false);
+		for (int i = 0; i < state.tab_deep(); i++) {
 			os << '\t';
 		}
 		os << ']';
-		return os;
+		return;
 	}
 }

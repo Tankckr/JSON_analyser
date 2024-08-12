@@ -1,5 +1,6 @@
 #pragma once
 #include"JSON_Value.h"
+#include<unordered_map>
 
 namespace MyJSON
 {
@@ -14,10 +15,10 @@ namespace MyJSON
 			child_.insert({ key,value });
 		}
 	public:
-		std::shared_ptr<JSON_Value> parser(
-			std::istream& ss,
-			std::shared_ptr<JSON_Value> fa) override;
-		std::ostream& print(std::ostream& os) override;
+		// std::shared_ptr<JSON_Value> parser(
+		// 	std::istream& ss,
+		// 	std::shared_ptr<JSON_Value> fa) override;
+		// std::ostream& print(std::ostream& os) override;
 
 		std::shared_ptr<JSON_Value> operator [] (std::string key)
 		{
@@ -26,6 +27,11 @@ namespace MyJSON
 		int get_size()
 		{
 			return child_.size();
+		}
+		std::unordered_map<std::string, std::shared_ptr<JSON_Value>>&
+		get_child()
+		{
+			return child_;
 		}
 		void insert(std::string key, std::shared_ptr<JSON_Value> value)
 		{

@@ -4,29 +4,19 @@
 namespace MyJSON
 {
 	/*----------非成员函数定义----------*/
-	void ignore_blank(std::istream& is)
-	{
-		while (is.peek() > 0 && is.peek() <= 32) {
-			if (is.peek() == '\n') {
-				error_line++;
-			}
-			is.ignore();
-		}
-	}
-	std::ostream& operator<< (std::ostream& os, std::shared_ptr<JSON_Value>& v)
-	{
-		if (v->get_type() != JINITIAL) {
-			return v->print(os);
-		} else {
-			os << "Error, can not print void JSON\n";
-			return os;
-		}
-	}
+
+	// std::ostream& operator<< (std::ostream& os, std::shared_ptr<JSON_Value>& v)
+	// {
+	// 	if (v->get_type() != JINITIAL) {
+	// 		return v->print(os);
+	// 	} else {
+	// 		os << "Error, can not print void JSON\n";
+	// 		return os;
+	// 	}
+	// }
 	std::string type_string(JSON_Type& t)
 	{
 		switch (t) {
-		case JERROR:
-			return "JERROR";
 		case JINITIAL:
 			return "JINITIAL";
 		case JOBJECT:
@@ -47,23 +37,23 @@ namespace MyJSON
 	}
 
 	/*----------报错类型定义----------*/
-	std::string syntax_error_object = "TypeError: "
-									  "The object struct is not valid.";
-	std::string syntax_error_array = "TypeError: "
-									 "The array struct is not valid.";
-	std::string syntax_error_string = "TypeError: "
-									  "The string struct is not valid, "
-									  "maybe omit '\"'?";
-	std::string syntax_error_number = "TypeError: "
-									  "The number is not valid, "
-									  "maybe some char in it?";
-	std::string syntax_error_unknown_type = "TypeError: "
-											"Unknown Value Type, "
-											"please check your spelling.";
-	std::string error_broken_file = "FileError: Stream unexpectedly over.";
-	std::string no_error = "NoError?";
+	// std::string syntax_error_object = "TypeError: "
+	// 								  "The object struct is not valid.";
+	// std::string syntax_error_array = "TypeError: "
+	// 								 "The array struct is not valid.";
+	// std::string syntax_error_string = "TypeError: "
+	// 								  "The string struct is not valid, "
+	// 								  "maybe omit '\"'?";
+	// std::string syntax_error_number = "TypeError: "
+	// 								  "The number is not valid, "
+	// 								  "maybe some char in it?";
+	// std::string syntax_error_unknown_type = "TypeError: "
+	// 										"Unknown Value Type, "
+	// 										"please check your spelling.";
+	// std::string error_broken_file = "FileError: Stream unexpectedly over.";
+	// std::string no_error = "NoError?";
 
 	/*----------全局变量初始化----------*/
-	thread_local int tab_deep = 0;
-	thread_local int error_line = 1;
+	// thread_local int tab_deep = 0;
+	// thread_local int error_line = 1;
 }

@@ -1,13 +1,16 @@
 #include"JSON_NULL.h"
+#include"JSON_Parser.h"
+#include"JSON_Printer.h"
 
 namespace MyJSON
 {
 	/*----------parser----------*/
-	std::shared_ptr<JSON_Value> JSON_NULL::parser(
+	std::shared_ptr<JSON_Value> JSON_Parser::nul_parser(
 			std::istream& ss,
-			std::shared_ptr<JSON_Value> fa)
+			std::shared_ptr<JSON_Value> fa,
+			Parse_State& state)
 	{
-		ignore_blank(ss);
+		state.ignore_blank(ss);
 		if (ss.peek() == 'n') {
 			ss.ignore();
 			if (ss.peek() == 'u') {
@@ -23,27 +26,13 @@ namespace MyJSON
 				}
 			}
 		}
-		return std::make_shared<JSON_Error>(ss,
-											ss.tellg(),
-											syntax_error_unknown_type);
-		// std::string ms = ss.str().substr(ss.tellg());
-		// std::smatch match;
-		// std::regex N("^(null)");
-		// if (std::regex_search(ms, match, N)) {
-		// 	std::shared_ptr<JSON_NULL> ret = std::make_shared<JSON_NULL>();
-		// 	ret->set_father(fa);
-		// 	ss.ignore(4);
-		// 	return ret;
-		// } else {
-		// 	return std::make_shared<JSON_Error>(ss,
-		// 										ss.tellg(),
-		// 										syntax_error_unknown_type);
-		// }
+		state.set_error("TypeError: Unknowned Value Type");
+		return nullptr;
 	}
 	/*----------print----------*/
-	std::ostream& JSON_NULL::print(std::ostream& os)
+	void JSON_Printer::nul_printer(std::ostream& os)
 	{
 		os << "null";
-		return os;
+		return;
 	}
 }

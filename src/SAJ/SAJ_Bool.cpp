@@ -35,7 +35,7 @@ namespace SAJ
 				}
 			}
 		}
-		p.error(error_line, "Error: unknown value type");
+		p.error(error_line, "Error: unknowned value type");
 		return false;
 	}
 }

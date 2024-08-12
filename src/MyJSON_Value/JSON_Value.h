@@ -28,11 +28,11 @@ namespace MyJSON
 			father_ = f;
 		}
 
-		virtual std::shared_ptr<JSON_Value> parser(
-				std::istream& ss,
-				std::shared_ptr<JSON_Value> fa = nullptr);
+		// virtual std::shared_ptr<JSON_Value> parser(
+		// 		std::istream& ss,
+		// 		std::shared_ptr<JSON_Value> fa = nullptr);
 
-		virtual std::ostream& print(std::ostream& os);
+		// virtual std::ostream& print(std::ostream& os);
 
 		JSON_Value(JSON_Type _type = JINITIAL): type_(_type)
 		{}
