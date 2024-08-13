@@ -35,25 +35,4 @@ namespace MyJSON
 			return "UNKNOWN";
 		}
 	}
-
-	/*----------报错类型定义----------*/
-	// std::string syntax_error_object = "TypeError: "
-	// 								  "The object struct is not valid.";
-	// std::string syntax_error_array = "TypeError: "
-	// 								 "The array struct is not valid.";
-	// std::string syntax_error_string = "TypeError: "
-	// 								  "The string struct is not valid, "
-	// 								  "maybe omit '\"'?";
-	// std::string syntax_error_number = "TypeError: "
-	// 								  "The number is not valid, "
-	// 								  "maybe some char in it?";
-	// std::string syntax_error_unknown_type = "TypeError: "
-	// 										"Unknown Value Type, "
-	// 										"please check your spelling.";
-	// std::string error_broken_file = "FileError: Stream unexpectedly over.";
-	// std::string no_error = "NoError?";
-
-	/*----------全局变量初始化----------*/
-	// thread_local int tab_deep = 0;
-	// thread_local int error_line = 1;
 }

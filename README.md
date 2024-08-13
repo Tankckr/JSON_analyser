@@ -31,11 +31,16 @@ using namespace MyJSON;
 //解析json
 istream is;
 JSON_Parser MyParser
-JSON_Value root;
-if(!MyParser.parse(is, root))
+std::shared_ptr<JSON_Value> root;
+root = MyParser.parse(is, root);
+if(root == nullptr)
 {
 	// Error
-	Parse_State error_state1 = MyParser.print_error();//获取错误状态对象或者直接打印
+	MyParser.print_error();//打印错误信息（默认cerr）
+	/*或输出到错误日志等os流
+		std::ofstream error_log;
+		MyParser.print_error(error_log);
+	*/
 }
 
 //输出json
@@ -44,7 +49,7 @@ JSON_Printer MyPrinter;
 if(!MyPrinter.print(os, root))
 {
 	// Error
-	Print_State error_state2 = MyPrinter.print_error();//获取错误状态对象或者直接打印
+	MyPrinter.print_error();//同上
 }
 ```
 #### 调用接口
@@ -197,20 +202,25 @@ class Parse_State
 		void ignore_blank(std::istream& is);	// 解析时跳过空白字符
 		bool get_state();
 		// Error
-		void set_error(std::string ec);
+		void set_error(std::string ei);
+		void print_error(std::ostream& os);
 	};
-JSON_Parser::print_parser();	// 打印错误信息
+void JSON_Parser::print_error(std::ostream& os = std::cerr);	// 打印错误信息
 
 class Print_State
 	{
 		bool state_ = true;
+		std::string error_info_;
 		int tab_deep_ = 0;
 	public:
 		void tab(bool ob);	// 打印时计算缩进
 		int tab_deep();
 		bool get_state();
+		// Error
+		void set_error(std::string ei);
+		void print_error(std::ostream& os);
 	};
-JSON_Printer::print_parser();	// 打印错误信息
+void JSON_Printer::print_error(std::ostream& os = std::cerr);	// 打印错误信息
 ```
 > ***输出效果*** *, 以std::cout为例(后续可能会有调整)*  
 ![JSON_Error sample](./doc/pic_src/JSON_Error.png)

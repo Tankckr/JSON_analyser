@@ -35,18 +35,22 @@ namespace MyJSON
 				std::istream&,
 				std::shared_ptr<JSON_Value> fa,
 				Parse_State&);
-		bool parse(std::istream& is, JSON_Value& val);
+		std::shared_ptr<JSON_Value> parse(std::istream& is);
 
 		bool get_state()
 		{
 			return state_.get_state();
+		}
+		void print_error(std::ostream& os = std::cerr)
+		{
+			state_.print_error(os);
 		}
 	};
 
 	class Parse_State
 	{
 		bool state_ = true;	// Error:false
-		std::string error_code_;
+		std::string error_info_;
 
 		int error_line_ = 1;
 	public:
@@ -56,10 +60,11 @@ namespace MyJSON
 			return state_;
 		}
 		// Error
-		void set_error(std::string ec)
+		void set_error(std::string ei)
 		{
 			state_ = false;
-			error_code_ = ec;
+			error_info_ = ei;
 		}
+		void print_error(std::ostream& os);
 	};
 }

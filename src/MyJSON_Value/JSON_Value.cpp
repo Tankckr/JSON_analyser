@@ -100,23 +100,26 @@ namespace MyJSON
 	}
 	/*----------print----------*/
 	void JSON_Printer::val_printer(std::ostream& os,
-								   std::shared_ptr<JSON_Value> self)
+								   std::shared_ptr<JSON_Value> self,
+								   Print_State state)
 	{
 		switch (self->get_type())
 		{
 		case JINITIAL:
 			{
-				os << "PrintError: Void JSON_Value struct can not be printed";
+				state.set_error(
+						  "PrintError:"
+						  " Void JSON_Value struct can not be printed");
 				break;
 			}
 		case JOBJECT:
 			{
-				JSON_Printer::obj_printer(os, self->get_obj());
+				JSON_Printer::obj_printer(os, self->get_obj(), state);
 				break;
 			}
 		case JARRAY:
 			{
-				JSON_Printer::arr_printer(os, self->get_arr());
+				JSON_Printer::arr_printer(os, self->get_arr(), state);
 				break;
 			}
 		case JSTRING:
@@ -136,12 +139,12 @@ namespace MyJSON
 			}
 		case JNULL:
 			{
-				JSON_Printer::nul_printer(os, self->get_nul());
+				JSON_Printer::nul_printer(os);
 				break;
 			}
 		default:
 			{
-				os << "PrintError: Unknowned JSON_Type";
+				state.set_error("PrintError: Unknowned JSON_Type");
 				break;
 			}
 		}

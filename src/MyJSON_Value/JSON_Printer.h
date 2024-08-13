@@ -8,7 +8,8 @@ namespace MyJSON
 		Print_State state_;
 	public:
 		static void val_printer(std::ostream& os,
-								std::shared_ptr<JSON_Value> self);
+								std::shared_ptr<JSON_Value> self,
+								Print_State);
 		static void obj_printer(std::ostream& os,
 								std::shared_ptr<JSON_Object> self,
 								Print_State);
@@ -23,15 +24,23 @@ namespace MyJSON
 								std::shared_ptr<JSON_Bool> self);
 		static void nul_printer(std::ostream& os);
 
+		bool print(std::ostream& os, JSON_Value& val);
+
 		bool get_state()
 		{
 			return state_.get_state();
+		}
+
+		void print_error(std::ostream& os = std::cerr)
+		{
+			state_.print_error(os);
 		}
 	};
 
 	class Print_State
 	{
 		bool state_ = true;
+		std::string error_info_;
 		int tab_deep_ = 0;
 
 	public:
@@ -51,5 +60,12 @@ namespace MyJSON
 		{
 			return state_;
 		}
+		// Error
+		void set_error(std::string ei)
+		{
+			state_ = false;
+			error_info_ = ei;
+		}
+		void print_error(std::ostream& os);
 	};
 }

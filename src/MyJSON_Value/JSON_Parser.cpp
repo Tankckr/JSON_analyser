@@ -2,15 +2,15 @@
 
 namespace MyJSON
 {
-	bool JSON_Parser::parse(std::istream& is, JSON_Value& val)
+	std::shared_ptr<JSON_Value> JSON_Parser::parse(std::istream& is)
 	{
 		std::shared_ptr<JSON_Value> p;
-		p = val_parser(is, nullptr, state_);
+		p = val_parser(is, p, state_);
 		if (!get_state())
 		{
-			return false;
+			return nullptr;
 		}
-		//如何从shared_ptr<JSON_Value>转化到JSON_Value还是个问题 orz
+		return p;
 	}
 
 	void Parse_State::ignore_blank(std::istream& is)
@@ -21,5 +21,10 @@ namespace MyJSON
 			}
 			is.ignore();
 		}
+	}
+	void Parse_State::print_error(std::ostream& os)
+	{
+		os << error_info_ << '\n';
+		os << "in line " << error_line_ << '\n';
 	}
 }
