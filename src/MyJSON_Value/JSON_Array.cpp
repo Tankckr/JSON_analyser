@@ -54,7 +54,7 @@ namespace MyJSON
 	/*----------print----------*/
 	void JSON_Printer::arr_printer(std::ostream& os,
 								   std::shared_ptr<JSON_Array> self,
-								   Print_State state)
+								   Print_State& state)
 	{
 		if (self->get_size() == 0) {
 			os << "[]";
@@ -67,7 +67,7 @@ namespace MyJSON
 			for (int i = 0; i < state.tab_deep(); i++) {
 				os << '\t';
 			}
-			os << self->get_child()[i];
+			JSON_Printer::val_printer(os, self->get_child()[i], state);
 			if (i != n - 1) {
 				os << ',';
 			}

@@ -18,7 +18,6 @@ namespace MyJSON
 		std::shared_ptr<JSON_String> get_str();
 		std::shared_ptr<JSON_Number> get_num();
 		std::shared_ptr<JSON_Bool> get_boo();
-		std::shared_ptr<JSON_NULL> get_nul();
 		std::shared_ptr<JSON_Value> get_father()
 		{
 			return father_;
@@ -27,12 +26,6 @@ namespace MyJSON
 		{
 			father_ = f;
 		}
-
-		// virtual std::shared_ptr<JSON_Value> parser(
-		// 		std::istream& ss,
-		// 		std::shared_ptr<JSON_Value> fa = nullptr);
-
-		// virtual std::ostream& print(std::ostream& os);
 
 		JSON_Value(JSON_Type _type = JINITIAL): type_(_type)
 		{}

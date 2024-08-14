@@ -27,6 +27,7 @@ namespace MyJSON
 		}
 
 		while (ss.peek() != EOF) {
+			state.ignore_blank(ss);
 			/*---"key"---*/
 			std::string key;
 			if(ss.peek()=='"')
@@ -43,6 +44,9 @@ namespace MyJSON
 					state.set_error("SyntaxError: Key's '\"' isn't closed");
 					return nullptr;
 				}
+			} else {
+				state.set_error("SyntaxError: Where is your object's key?");
+				return nullptr;
 			}
 			/*---"key"---*/
 			/*---:---*/
@@ -80,7 +84,7 @@ namespace MyJSON
 	/*----------print----------*/
 	void JSON_Printer::obj_printer(std::ostream& os,
 								   std::shared_ptr<JSON_Object> self,
-								   Print_State state)
+								   Print_State& state)
 	{
 		if (self->get_size() == 0) {
 			os << "{}";
@@ -95,9 +99,10 @@ namespace MyJSON
 			}
 			os << k << ':';
 			if (v->get_type() == JOBJECT || v->get_type() == JARRAY) {
-				os << v;
+				JSON_Printer::val_printer(os, v, state);
 			} else {
-				os << ' ' << v;
+				os << ' ';
+				JSON_Printer::val_printer(os, v, state);
 			}
 			if (std::next(it) != self->get_child().end()) {
 				os << ',';

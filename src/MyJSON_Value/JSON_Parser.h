@@ -3,6 +3,27 @@
 
 namespace MyJSON
 {
+	class Parse_State
+	{
+		bool state_ = true;	// Error:false
+		std::string error_info_;
+
+		int error_line_ = 1;
+	public:
+		void ignore_blank(std::istream& is);
+		bool get_state()
+		{
+			return state_;
+		}
+		// Error
+		void set_error(std::string ei)
+		{
+			state_ = false;
+			error_info_ = ei;
+		}
+		void print_error(std::ostream& os);
+	};
+
 	class JSON_Parser
 	{
 		Parse_State state_;
@@ -45,26 +66,5 @@ namespace MyJSON
 		{
 			state_.print_error(os);
 		}
-	};
-
-	class Parse_State
-	{
-		bool state_ = true;	// Error:false
-		std::string error_info_;
-
-		int error_line_ = 1;
-	public:
-		void ignore_blank(std::istream& is);
-		bool get_state()
-		{
-			return state_;
-		}
-		// Error
-		void set_error(std::string ei)
-		{
-			state_ = false;
-			error_info_ = ei;
-		}
-		void print_error(std::ostream& os);
 	};
 }

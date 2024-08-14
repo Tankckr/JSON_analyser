@@ -17,7 +17,7 @@ include_directories(${GTEST_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # 包含当前源代码目录，以便找到MyJSON.h
 
 # 创建可执行文件并链接
-file(GLOB SOURCES "../src/MyJSON_Value/*.cpp" "../src/SAJ/*.cpp")
+file(GLOB SOURCES "../src/MyJSON_Value/*.cpp")
 add_executable(MyJSONTests ${SOURCES} ../test.cpp)
 target_link_libraries(MyJSONTests ${GTEST_LIBRARIES} pthread)
 

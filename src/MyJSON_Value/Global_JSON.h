@@ -24,17 +24,11 @@ namespace MyJSON
 	class JSON_Bool;
 	class JSON_NULL;
 
-	/*----------报错类型声明----------*/
-	// extern std::string syntax_error_object;
-	// extern std::string syntax_error_array;
-	// extern std::string syntax_error_string;
-	// extern std::string syntax_error_number;
-	// extern std::string syntax_error_unknown_type;
-	// extern std::string error_broken_file;
-	// extern std::string no_error;
+	class JSON_Parser;
+	class Parse_State;
+	class JSON_Printer;
+	class Print_State;
 
-	/*----------非成员函数声明----------*/
-	// std::ostream& operator<< (std::ostream& os,
-	// 						  std::shared_ptr<JSON_Value>& v);
+	/*----------报错类型声明----------*/
 	std::string type_string(JSON_Type& t);
 }

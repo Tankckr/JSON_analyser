@@ -1,8 +1,20 @@
+#include"JSON_Value.h"
+#include"JSON_Object.h"
+#include"JSON_Array.h"
+#include"JSON_String.h"
+#include"JSON_Number.h"
+#include"JSON_Bool.h"
+#include"JSON_NULL.h"
 #include"JSON_Parser.h"
 #include"JSON_Printer.h"
 
 namespace MyJSON
 {
+	class JSON_Object;
+	class JSON_Array;
+	class JSON_String;
+	class JSON_Number;
+	class JSON_Bool;
 	/*----------get_pointer----------*/
 	std::shared_ptr<JSON_Object> JSON_Value::get_obj()
 	{
@@ -49,16 +61,6 @@ namespace MyJSON
 		}
 		return std::dynamic_pointer_cast<JSON_Bool>(shared_from_this());
 	}
-	std::shared_ptr<JSON_NULL> JSON_Value::get_nul()
-	{
-		if (type_ != JNULL) {
-			std::cerr << "\niwanna JNULL, your type:"
-					  << type_string(type_) << '\n';
-			throw "type Error!";
-		}
-		return std::dynamic_pointer_cast<JSON_NULL>(shared_from_this());
-	}
-
 	/*----------parser----------*/
 
 	/// @brief 
@@ -101,7 +103,7 @@ namespace MyJSON
 	/*----------print----------*/
 	void JSON_Printer::val_printer(std::ostream& os,
 								   std::shared_ptr<JSON_Value> self,
-								   Print_State state)
+								   Print_State& state)
 	{
 		switch (self->get_type())
 		{

@@ -1,4 +1,5 @@
 #include"src/MyJSON.h"
+#include"src/SAJ/SAJ.h"
 
 using namespace MyJSON;
 using namespace SAJ;
@@ -230,15 +231,17 @@ public:
 	}
 };
 
+#include <fstream>
 int main()
 {
 	MyJSON_Processor pro;
-	std::fstream file("../test_sample2.json");
+	std::ifstream file("../test_sample2.json");
 	if (file.is_open()) {
 		std::stringstream ss;
 		ss << file.rdbuf();
 		parse_to_SAJ(ss, pro);
-		pro.get_root()->print(std::cout);
+		JSON_Printer Pt;
+		Pt.print(std::cout, *pro.get_root().get());
 	} else
 		std::cout << "open failed\n";
 }

@@ -4,16 +4,6 @@
 namespace MyJSON
 {
 	/*----------非成员函数定义----------*/
-
-	// std::ostream& operator<< (std::ostream& os, std::shared_ptr<JSON_Value>& v)
-	// {
-	// 	if (v->get_type() != JINITIAL) {
-	// 		return v->print(os);
-	// 	} else {
-	// 		os << "Error, can not print void JSON\n";
-	// 		return os;
-	// 	}
-	// }
 	std::string type_string(JSON_Type& t)
 	{
 		switch (t) {
